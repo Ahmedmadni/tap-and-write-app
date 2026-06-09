@@ -1,29 +1,89 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings } from "lucide-react";
+import { SupportBanner } from "@/components/nfc/SupportBanner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "NFC Tools — قارئ وكاتب بطاقات NFC" },
+      {
+        name: "description",
+        content:
+          "تطبيق هاتف لقراءة وكتابة وتهيئة وقفل بطاقات NFC بجميع صيغ NDEF (نص، روابط، WiFi، vCard، MIME).",
+      },
     ],
   }),
-  component: Index,
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+const tiles = [
+  { to: "/read", icon: ScanLine, label: "قراءة بطاقة", desc: "قرّب البطاقة لعرض محتواها" },
+  { to: "/write", icon: Edit3, label: "كتابة بيانات", desc: "نص، رابط، WiFi، vCard..." },
+  { to: "/erase", icon: Eraser, label: "تهيئة البطاقة", desc: "مسح كل المحتوى" },
+  { to: "/lock", icon: Lock, label: "قفل البطاقة", desc: "جعلها للقراءة فقط (نهائي)" },
+] as const;
+
+function Home() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div dir="rtl" className="min-h-screen bg-background text-foreground">
+      <header className="px-4 pt-10 pb-6">
+        <div className="mx-auto flex max-w-md items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-lg shadow-primary/30">
+              <Nfc className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold leading-tight">NFC Tools</h1>
+              <p className="text-xs text-muted-foreground">قارئ وكاتب بطاقات NFC</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              to="/history"
+              aria-label="السجل"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/70"
+            >
+              <History className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/settings"
+              aria-label="الإعدادات"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/70"
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-md px-4 pb-12">
+        <SupportBanner />
+
+        <div className="grid grid-cols-2 gap-3">
+          {tiles.map(({ to, icon: Icon, label, desc }) => (
+            <Link
+              key={to}
+              to={to}
+              className="group relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl border border-border/60 bg-card p-4 text-card-foreground transition hover:border-primary/40 hover:bg-card/80 active:scale-[0.98]"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+                <Icon className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-base font-semibold">{label}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">{desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <section className="mt-8 rounded-2xl border border-border/60 bg-card/50 p-4 text-sm text-muted-foreground">
+          <p className="leading-relaxed">
+            <strong className="text-foreground">ملاحظة:</strong> Web NFC مدعوم على Chrome / Edge في Android فقط.
+            افتح هذا التطبيق على متصفح هاتفك مباشرة، ثم استخدم خيار "إضافة إلى الشاشة الرئيسية" لتثبيته كأيقونة.
+          </p>
+        </section>
+      </main>
     </div>
   );
 }
