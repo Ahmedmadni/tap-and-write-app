@@ -106,7 +106,7 @@ function HistoryPage() {
     } catch {
       /* ignore */
     }
-    navigate({ to: "/write", search: { from: entry.id } as never });
+    navigate({ to: "/write" });
   }
 
   return (
