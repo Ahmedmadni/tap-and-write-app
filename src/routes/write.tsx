@@ -6,6 +6,7 @@ import { ScanOverlay } from "@/components/nfc/ScanOverlay";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 import { checkNfcSupport, friendlyError } from "@/lib/nfc/support";
 import { buildRecord, estimateSize } from "@/lib/nfc/writer";
+import { CHIP_PRESETS } from "@/lib/nfc/decoder";
 import type { DraftRecord, RecordKind } from "@/lib/nfc/types";
 import { addHistory } from "@/lib/storage/history";
 
@@ -163,10 +164,27 @@ function WritePage() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [overwrite, setOverwrite] = useState(true);
+  const [chip, setChip] = useState<string>("NTAG213");
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("nfc:prefill");
+      if (!raw) return;
+      const p = JSON.parse(raw) as { drafts?: DraftRecord[] };
+      if (p.drafts && Array.isArray(p.drafts) && p.drafts.length) {
+        setDrafts(p.drafts.map((d) => ({ ...d, id: crypto.randomUUID() })));
+      }
+      sessionStorage.removeItem("nfc:prefill");
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const records = drafts.map(buildRecord);
   const size = estimateSize(records);
+  const preset = CHIP_PRESETS.find((c) => c.name === chip) ?? CHIP_PRESETS[0];
+  const over = size > preset.capacity;
 
   function updateAt(i: number, d: DraftRecord) {
     setDrafts((arr) => arr.map((x, idx) => (idx === i ? d : x)));
@@ -242,9 +260,32 @@ function WritePage() {
           <Plus className="h-4 w-4" /> إضافة سجل آخر
         </button>
 
-        <div className="rounded-2xl border border-border/60 bg-card/50 p-3 text-xs text-muted-foreground">
-          الحجم التقديري: <span className="text-foreground">{size}</span> بايت
-          {size > 137 && <span className="block mt-1 text-amber-500">⚠ قد يتجاوز سعة بطاقات NTAG213 (137 بايت).</span>}
+        <div className="rounded-2xl border border-border/60 bg-card/50 p-3 text-xs">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground">
+              الحجم: <span className="text-foreground">{size}</span> / {preset.capacity} بايت
+            </span>
+            <select
+              className="rounded-lg border border-border bg-background px-2 py-1 text-xs"
+              value={chip}
+              onChange={(e) => setChip(e.target.value)}
+            >
+              {CHIP_PRESETS.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+            <div
+              className={`h-full transition-all ${over ? "bg-destructive" : "bg-primary"}`}
+              style={{ width: `${Math.min(100, (size / preset.capacity) * 100)}%` }}
+            />
+          </div>
+          {over && (
+            <p className="mt-2 text-amber-500">⚠ الحجم يتجاوز سعة {preset.name}.</p>
+          )}
         </div>
 
         <label className="flex items-center gap-2 text-sm">
