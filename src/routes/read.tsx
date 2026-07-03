@@ -5,7 +5,7 @@ import { AppShell } from "@/components/nfc/AppShell";
 import { ScanOverlay } from "@/components/nfc/ScanOverlay";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 import { checkNfcSupport, friendlyError } from "@/lib/nfc/support";
-import { decodeRecord } from "@/lib/nfc/decoder";
+import { decodeRecord, guessChipFromUid } from "@/lib/nfc/decoder";
 import type { ScanResult } from "@/lib/nfc/types";
 import { addHistory } from "@/lib/storage/history";
 
@@ -106,7 +106,17 @@ function ReadPage() {
               <Tag className="h-3.5 w-3.5" />
               المعرف الفريد (UID)
             </div>
-            <p className="mt-1 font-mono text-sm break-all">{result.serialNumber}</p>
+            <div className="mt-1 flex items-center gap-2">
+              <p className="font-mono text-sm break-all">{result.serialNumber}</p>
+              <button
+                onClick={() => navigator.clipboard?.writeText(result.serialNumber)}
+                className="shrink-0 rounded-md bg-secondary p-1.5 text-muted-foreground hover:text-foreground"
+                title="نسخ UID"
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-primary">{guessChipFromUid(result.serialNumber)}</p>
             <p className="mt-2 text-xs text-muted-foreground">
               {result.records.length} سجل • {new Date(result.timestamp).toLocaleString("ar")}
             </p>

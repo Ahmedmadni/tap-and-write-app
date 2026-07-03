@@ -23,6 +23,10 @@ export async function addHistory(entry: HistoryEntry) {
   await set(KEY, list.slice(0, 200));
 }
 
+export async function saveHistory(list: HistoryEntry[]) {
+  await set(KEY, list.slice(0, 500));
+}
+
 export async function clearHistory() {
   await set(KEY, []);
 }
