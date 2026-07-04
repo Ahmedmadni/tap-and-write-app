@@ -24,14 +24,14 @@ let cachedNativePlugin: unknown = null;
 async function tryLoadNativePlugin(): Promise<unknown> {
   if (cachedNativePlugin) return cachedNativePlugin;
   try {
-    const cap = await import(/* @vite-ignore */ "@capacitor/core").catch(() => null);
+    const capName = "@capacitor/core";
+    const cap = await import(/* @vite-ignore */ capName).catch(() => null);
     const Capacitor = (cap as { Capacitor?: { isNativePlatform: () => boolean } } | null)
       ?.Capacitor;
     if (!Capacitor?.isNativePlatform?.()) return null;
-    // dynamic — قد لا يكون مثبّتاً
-    const mod = await import(
-      /* @vite-ignore */ "@capawesome-team/capacitor-nfc"
-    ).catch(() => null);
+    // dynamic — الـ plugin قد لا يكون مثبّتاً بعد
+    const pluginName = "@capawesome-team/capacitor-nfc";
+    const mod = await import(/* @vite-ignore */ pluginName).catch(() => null);
     if (!mod) return null;
     cachedNativePlugin = mod;
     return mod;
