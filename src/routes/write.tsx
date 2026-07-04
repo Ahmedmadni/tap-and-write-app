@@ -6,6 +6,7 @@ import { ScanOverlay } from "@/components/nfc/ScanOverlay";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 import { checkNfcSupport, friendlyError } from "@/lib/nfc/support";
 import { buildRecord, estimateSize } from "@/lib/nfc/writer";
+import { writeRecords } from "@/lib/nfc/adapter";
 import { CHIP_PRESETS } from "@/lib/nfc/decoder";
 import type { DraftRecord, RecordKind } from "@/lib/nfc/types";
 import { addHistory } from "@/lib/storage/history";

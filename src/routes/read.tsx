@@ -5,7 +5,8 @@ import { AppShell } from "@/components/nfc/AppShell";
 import { ScanOverlay } from "@/components/nfc/ScanOverlay";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 import { checkNfcSupport, friendlyError } from "@/lib/nfc/support";
-import { decodeRecord, guessChipFromUid } from "@/lib/nfc/decoder";
+import { guessChipFromUid } from "@/lib/nfc/decoder";
+import { startRead } from "@/lib/nfc/adapter";
 import type { ScanResult } from "@/lib/nfc/types";
 import { addHistory } from "@/lib/storage/history";
 
@@ -30,30 +31,23 @@ function ReadPage() {
     setError(null);
     setSaved(false);
     const sup = checkNfcSupport();
-    if (sup.status !== "ok") {
+    if (sup.status !== "ok" && sup.status !== "native") {
       setError(sup.status === "ssr" ? "" : (sup as { message: string }).message);
       return;
     }
     try {
-      const reader = new NDEFReader();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
-      await reader.scan({ signal: ctrl.signal });
       setScanning(true);
-      reader.onreading = (e: NDEFReadingEvent) => {
-        const decoded = e.message.records.map(decodeRecord);
-        const res: ScanResult = {
-          serialNumber: e.serialNumber,
-          records: decoded,
-          timestamp: Date.now(),
-        };
-        setResult(res);
-        setScanning(false);
-        ctrl.abort();
-      };
-      reader.onreadingerror = () => {
-        setError("تعذّر قراءة البطاقة، حاول مرة أخرى.");
-      };
+      await startRead({
+        signal: ctrl.signal,
+        onReading: (res) => {
+          setResult(res);
+          setScanning(false);
+          ctrl.abort();
+        },
+        onError: () => setError("تعذّر قراءة البطاقة، حاول مرة أخرى."),
+      });
     } catch (err) {
       setScanning(false);
       setError(friendlyError(err));
