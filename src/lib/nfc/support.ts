@@ -1,4 +1,4 @@
-import type { NDEFReadingEvent } from "./types";
+
 
 export type NfcSupport =
   | { status: "ok" }
@@ -66,6 +66,3 @@ export function friendlyError(err: unknown): string {
   if (name === "AbortError") return "تم إلغاء العملية.";
   return err.message || "حدث خطأ غير متوقع.";
 }
-
-// re-export للراحة
-export type { NDEFReadingEvent };
