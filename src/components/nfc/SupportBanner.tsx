@@ -8,16 +8,16 @@ export function SupportBanner() {
 
   if (s.status === "ok" || s.status === "ssr") return null;
 
-  const isIframe = s.status === "iframe";
+  const info = s.status === "iframe" || s.status === "native";
   return (
     <div
       className={`mb-4 flex gap-3 rounded-2xl border p-4 text-sm ${
-        isIframe
+        info
           ? "border-primary/30 bg-primary/10 text-foreground"
           : "border-destructive/40 bg-destructive/10 text-foreground"
       }`}
     >
-      {isIframe ? (
+      {info ? (
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
       ) : (
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />

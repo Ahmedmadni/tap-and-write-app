@@ -1,12 +1,28 @@
+
+
 export type NfcSupport =
   | { status: "ok" }
+  | { status: "native"; message: string }
   | { status: "ssr" }
   | { status: "iframe"; message: string }
   | { status: "insecure"; message: string }
   | { status: "unsupported"; message: string };
 
+function isCapacitorNative(): boolean {
+  if (typeof window === "undefined") return false;
+  const w = window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } };
+  return !!w.Capacitor?.isNativePlatform?.();
+}
+
 export function checkNfcSupport(): NfcSupport {
   if (typeof window === "undefined") return { status: "ssr" };
+
+  if (isCapacitorNative()) {
+    return {
+      status: "native",
+      message: "وضع التطبيق الأصلي — NFC عبر Capacitor.",
+    };
+  }
 
   if (window.self !== window.top) {
     return {
