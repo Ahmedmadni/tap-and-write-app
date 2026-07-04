@@ -198,16 +198,15 @@ function WritePage() {
     setError(null);
     setDone(false);
     const sup = checkNfcSupport();
-    if (sup.status !== "ok") {
+    if (sup.status !== "ok" && sup.status !== "native") {
       setError(sup.status === "ssr" ? "" : (sup as { message: string }).message);
       return;
     }
     try {
-      const reader = new NDEFReader();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       setWriting(true);
-      await reader.write({ records }, { overwrite, signal: ctrl.signal });
+      await writeRecords(records, { overwrite, signal: ctrl.signal });
       setWriting(false);
       setDone(true);
       await addHistory({

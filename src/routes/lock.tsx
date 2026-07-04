@@ -5,6 +5,7 @@ import { AppShell } from "@/components/nfc/AppShell";
 import { ScanOverlay } from "@/components/nfc/ScanOverlay";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 import { checkNfcSupport, friendlyError } from "@/lib/nfc/support";
+import { makeReadOnly } from "@/lib/nfc/adapter";
 import { addHistory } from "@/lib/storage/history";
 
 export const Route = createFileRoute("/lock")({
@@ -28,16 +29,15 @@ function LockPage() {
     setError(null);
     setDone(false);
     const sup = checkNfcSupport();
-    if (sup.status !== "ok") {
+    if (sup.status !== "ok" && sup.status !== "native") {
       setError(sup.status === "ssr" ? "" : (sup as { message: string }).message);
       return;
     }
     try {
-      const reader = new NDEFReader();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       setBusy(true);
-      await reader.makeReadOnly({ signal: ctrl.signal });
+      await makeReadOnly({ signal: ctrl.signal });
       setBusy(false);
       setDone(true);
       await addHistory({ id: crypto.randomUUID(), type: "lock", timestamp: Date.now() });
