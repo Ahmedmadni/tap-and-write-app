@@ -227,3 +227,50 @@ bunx cap sync android
 - نضيف سكربت `bun run build` ثم `bunx cap sync android`.
 
 أخبرني وقتها وأجهّز التحويل.
+
+---
+
+## المرحلة 3 — تفعيل Native NFC (اختياري)
+
+التطبيق الآن يستخدم طبقة تجريد `src/lib/nfc/adapter.ts` تختار تلقائياً:
+- **Web NFC** (NDEFReader) داخل Chrome/WebView — الوضع الافتراضي.
+- **Native NFC** عبر Capacitor plugin — عند تثبيته.
+
+### خطوات تفعيل Native NFC
+
+داخل مجلد المشروع (بعد سحبه من GitHub):
+
+```bash
+bun add @capawesome-team/capacitor-nfc
+bunx cap sync android
+```
+
+ثم افتح `android/app/src/main/AndroidManifest.xml` وتأكد من:
+
+```xml
+<uses-permission android:name="android.permission.NFC" />
+<uses-feature android:name="android.hardware.nfc" android:required="true" />
+```
+
+لفتح التطبيق تلقائياً عند مسح بطاقة من خارجه، أضِف داخل `<activity>` الرئيسي:
+
+```xml
+<intent-filter>
+  <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <data android:mimeType="text/plain" />
+</intent-filter>
+```
+
+بعد ذلك، الـ adapter سيكتشف الـ plugin ويستخدمه تلقائياً — لا حاجة لتغيير أي كود.
+
+### ملاحظة عن `server.url`
+
+`capacitor.config.ts` حالياً يشير إلى `https://tap-and-write-app.lovable.app`. الـ plugin الأصلي
+قد لا يعمل بشكل موثوق مع WebView خارجي المصدر. للاستفادة الكاملة من Native NFC، حوّل التطبيق
+لبناء SPA offline:
+
+1. احذف `server.url` من `capacitor.config.ts`.
+2. `bun run build` (يبني إلى `dist/public`).
+3. `bunx cap sync android`.
+4. أعِد بناء APK من Android Studio.
