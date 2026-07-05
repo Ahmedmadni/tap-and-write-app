@@ -24,6 +24,7 @@ export default defineConfig({
         "/lock",
         "/history",
         "/settings",
+        "/test",
       ],
     },
   },
