@@ -190,22 +190,24 @@ android/app/release/app-release.apk
 ```
 انقله للهاتف عبر USB أو Drive وثبّته (فعّل **Install from unknown sources** في الإعدادات).
 
-### 4.3 للتحديثات المستقبلية
+### 4.3 للتحديثات المستقبلية (Offline build — المرحلة 4)
 كلما عدّلت التطبيق في Lovable:
 ```bash
 git pull
-bunx cap sync android
+bun install
+bun run build:mobile     # يبني SPA static + cap sync android
 ```
 ثم في Android Studio: **Build → Generate Signed Bundle / APK** مرة أخرى (نفس الـ keystore).
 
-> 💡 **ميزة الإعداد الحالي**: `capacitor.config.ts` يحمّل التطبيق من
-> `https://tap-and-write-app.lovable.app` مباشرة. هذا يعني **أي تعديل تنشره من Lovable
-> يظهر فوراً في APK المثبّت بدون إعادة بناء**. تحتاج إعادة بناء APK فقط لو غيّرت
-> الأيقونة، الاسم، الأذونات، أو الإعدادات الأصلية.
+> ✅ **الوضع الحالي (Offline كامل)**: `capacitor.config.ts` بدون `server.url`،
+> والتطبيق يُبنى كملفات ثابتة داخل `dist/public` عبر prerender في `vite.config.ts`،
+> ثم Capacitor يعبّئها داخل APK. **التطبيق يعمل بدون إنترنت** بعد التثبيت.
+> أي تعديل يتطلب `bun run build:mobile` + إعادة بناء APK.
 
 ---
 
 ## أخطاء شائعة وحلولها
+
 
 | الخطأ | الحل |
 |------|------|
@@ -214,21 +216,12 @@ bunx cap sync android
 | `adb: no devices` | كيبل USB سيء، أو USB debugging غير مفعّل، أو ما قبلت RSA prompt |
 | `Gradle sync failed` | **File → Invalidate Caches → Invalidate and Restart** |
 | `NDEFReader is not defined` داخل التطبيق | حدّث **Android System WebView** من Play |
-| `Cleartext HTTP traffic not permitted` | لا تستخدم http://، فقط https:// في `server.url` |
+| `Cleartext HTTP traffic not permitted` | لا تستخدم http://، فقط https:// |
 | `Installation blocked` على الهاتف | فعّل تثبيت من مصادر غير معروفة لتطبيق الملفات |
+| `dist/public not found` عند `cap sync` | نفّذ `bun run build` أولاً |
 
 ---
 
-## بناء offline كامل (اختياري — لاحقاً)
-
-الإعداد الحالي يحتاج إنترنت لأنه يحمّل من Lovable. لو أردت APK مستقل تماماً:
-- نحتاج تحويل المشروع من TanStack Start SSR إلى **SPA static export**.
-- نزيل `server.url` من `capacitor.config.ts` ونبقي `webDir: "dist/public"`.
-- نضيف سكربت `bun run build` ثم `bunx cap sync android`.
-
-أخبرني وقتها وأجهّز التحويل.
-
----
 
 ## المرحلة 3 — تفعيل Native NFC (اختياري)
 

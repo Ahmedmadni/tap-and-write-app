@@ -1,25 +1,21 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * إعدادات Capacitor لتحويل التطبيق إلى APK عبر Android Studio.
+ * إعدادات Capacitor — وضع Offline كامل (المرحلة 4).
  *
- * نستخدم وضع server.url ليفتح التطبيق المنشور على Lovable مباشرة داخل
- * WebView. هذا ضروري لأن Web NFC (NDEFReader) يحتاج Chrome على Android،
- * و WebView القياسي يدعمه أيضاً ابتداءً من Android 10+ (API 29) عندما
- * يكون System WebView محدّثاً ومبنياً على Chromium 89+.
+ * التطبيق يُبنى كـ SPA static داخل `dist/public` عبر TanStack Start
+ * (prerender)، ثم Capacitor يعبّئ الملفات داخل APK.
+ * - لا حاجة للإنترنت لتشغيل التطبيق.
+ * - Web NFC (NDEFReader) يعمل داخل WebView على Android 10+ مع تحديث System WebView.
+ * - يمكن تفعيل Native NFC عبر @capawesome-team/capacitor-nfc (اختياري).
  *
- * إذا أردت لاحقاً بناء التطبيق بالكامل offline، استبدل server.url
- * بـ webDir يحتوي مخرجات بناء ثابتة (SPA static export).
+ * لو أردت إعادة الوضع الأونلاين (تحميل من Lovable مباشرة)، أعد سطر:
+ *   server: { url: "https://tap-and-write-app.lovable.app", androidScheme: "https" }
  */
 const config: CapacitorConfig = {
   appId: "app.lovable.nfctools",
   appName: "NFC Tools",
   webDir: "dist/public",
-  server: {
-    url: "https://tap-and-write-app.lovable.app",
-    cleartext: false,
-    androidScheme: "https",
-  },
   android: {
     allowMixedContent: false,
   },
