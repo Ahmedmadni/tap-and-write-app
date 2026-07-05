@@ -216,21 +216,12 @@ bun run build:mobile     # يبني SPA static + cap sync android
 | `adb: no devices` | كيبل USB سيء، أو USB debugging غير مفعّل، أو ما قبلت RSA prompt |
 | `Gradle sync failed` | **File → Invalidate Caches → Invalidate and Restart** |
 | `NDEFReader is not defined` داخل التطبيق | حدّث **Android System WebView** من Play |
-| `Cleartext HTTP traffic not permitted` | لا تستخدم http://، فقط https:// في `server.url` |
+| `Cleartext HTTP traffic not permitted` | لا تستخدم http://، فقط https:// |
 | `Installation blocked` على الهاتف | فعّل تثبيت من مصادر غير معروفة لتطبيق الملفات |
+| `dist/public not found` عند `cap sync` | نفّذ `bun run build` أولاً |
 
 ---
 
-## بناء offline كامل (اختياري — لاحقاً)
-
-الإعداد الحالي يحتاج إنترنت لأنه يحمّل من Lovable. لو أردت APK مستقل تماماً:
-- نحتاج تحويل المشروع من TanStack Start SSR إلى **SPA static export**.
-- نزيل `server.url` من `capacitor.config.ts` ونبقي `webDir: "dist/public"`.
-- نضيف سكربت `bun run build` ثم `bunx cap sync android`.
-
-أخبرني وقتها وأجهّز التحويل.
-
----
 
 ## المرحلة 3 — تفعيل Native NFC (اختياري)
 
