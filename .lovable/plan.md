@@ -3,11 +3,9 @@
 ## تم إنجازه ✓
 - المرحلة 1: تحسين كتابة/قراءة + معاينة حجم + معاجلات WiFi/vCard/إلخ.
 - المرحلة 2: سجل مع بحث/فلترة/تصدير/استيراد + إعادة كتابة.
-- المرحلة 3: طبقة تجريد `adapter.ts` تدعم Web NFC + Capacitor Native NFC (dynamic).
+- المرحلة 3: طبقة تجريد `adapter.ts` تدعم Web NFC + Capacitor Native NFC.
+- المرحلة 4: بناء Offline كامل — prerender لكل المسارات، إزالة `server.url`، سكربت `build:mobile`.
 
-## الوضع الحالي
-- التطبيق يعمل كـ PWA على Chrome Android عبر Web NFC.
-- Capacitor مُهيّأ بوضع `server.url` يشير إلى الرابط المنشور — أي APK يبنيه المستخدم يعرض التطبيق من Lovable مباشرة.
 - الشاشات الأساسية موجودة: قراءة، كتابة، تهيئة، قفل، سجل، إعدادات.
 - دليل بناء APK تفصيلي جاهز في `ANDROID_BUILD.md`.
 

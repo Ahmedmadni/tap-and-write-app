@@ -190,22 +190,24 @@ android/app/release/app-release.apk
 ```
 انقله للهاتف عبر USB أو Drive وثبّته (فعّل **Install from unknown sources** في الإعدادات).
 
-### 4.3 للتحديثات المستقبلية
+### 4.3 للتحديثات المستقبلية (Offline build — المرحلة 4)
 كلما عدّلت التطبيق في Lovable:
 ```bash
 git pull
-bunx cap sync android
+bun install
+bun run build:mobile     # يبني SPA static + cap sync android
 ```
 ثم في Android Studio: **Build → Generate Signed Bundle / APK** مرة أخرى (نفس الـ keystore).
 
-> 💡 **ميزة الإعداد الحالي**: `capacitor.config.ts` يحمّل التطبيق من
-> `https://tap-and-write-app.lovable.app` مباشرة. هذا يعني **أي تعديل تنشره من Lovable
-> يظهر فوراً في APK المثبّت بدون إعادة بناء**. تحتاج إعادة بناء APK فقط لو غيّرت
-> الأيقونة، الاسم، الأذونات، أو الإعدادات الأصلية.
+> ✅ **الوضع الحالي (Offline كامل)**: `capacitor.config.ts` بدون `server.url`،
+> والتطبيق يُبنى كملفات ثابتة داخل `dist/public` عبر prerender في `vite.config.ts`،
+> ثم Capacitor يعبّئها داخل APK. **التطبيق يعمل بدون إنترنت** بعد التثبيت.
+> أي تعديل يتطلب `bun run build:mobile` + إعادة بناء APK.
 
 ---
 
 ## أخطاء شائعة وحلولها
+
 
 | الخطأ | الحل |
 |------|------|

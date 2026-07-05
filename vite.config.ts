@@ -11,5 +11,20 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // المرحلة 4 — Prerender كل المسارات لبناء SPA static جاهز للتعبئة داخل APK عبر Capacitor.
+    prerender: {
+      enabled: true,
+      crawlLinks: true,
+      // كل مسارات التطبيق (يُستخدم كنقاط بداية للزحف).
+      routes: [
+        "/",
+        "/read",
+        "/write",
+        "/erase",
+        "/lock",
+        "/history",
+        "/settings",
+      ],
+    },
   },
 });
