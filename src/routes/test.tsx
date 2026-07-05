@@ -338,7 +338,7 @@ function TestPage() {
 
       {busy && (
         <ScanOverlay
-          title={busy.mode === "write" ? "قرّب البطاقة للكتابة" : "قرّب البطاقة للقراءة"}
+          label={busy.mode === "write" ? "قرّب البطاقة للكتابة" : "قرّب البطاقة للقراءة"}
           onCancel={cancel}
         />
       )}

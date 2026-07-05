@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WriteRouteImport } from './routes/write'
+import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReadRouteImport } from './routes/read'
 import { Route as LockRouteImport } from './routes/lock'
@@ -20,6 +21,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const WriteRoute = WriteRouteImport.update({
   id: '/write',
   path: '/write',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/lock': typeof LockRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
+  '/test': typeof TestRoute
   '/write': typeof WriteRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/lock': typeof LockRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
+  '/test': typeof TestRoute
   '/write': typeof WriteRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/lock': typeof LockRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
+  '/test': typeof TestRoute
   '/write': typeof WriteRoute
 }
 export interface FileRouteTypes {
@@ -90,9 +99,18 @@ export interface FileRouteTypes {
     | '/lock'
     | '/read'
     | '/settings'
+    | '/test'
     | '/write'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/erase' | '/history' | '/lock' | '/read' | '/settings' | '/write'
+  to:
+    | '/'
+    | '/erase'
+    | '/history'
+    | '/lock'
+    | '/read'
+    | '/settings'
+    | '/test'
+    | '/write'
   id:
     | '__root__'
     | '/'
@@ -101,6 +119,7 @@ export interface FileRouteTypes {
     | '/lock'
     | '/read'
     | '/settings'
+    | '/test'
     | '/write'
   fileRoutesById: FileRoutesById
 }
@@ -111,6 +130,7 @@ export interface RootRouteChildren {
   LockRoute: typeof LockRoute
   ReadRoute: typeof ReadRoute
   SettingsRoute: typeof SettingsRoute
+  TestRoute: typeof TestRoute
   WriteRoute: typeof WriteRoute
 }
 
@@ -121,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/write'
       fullPath: '/write'
       preLoaderRoute: typeof WriteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -175,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   LockRoute: LockRoute,
   ReadRoute: ReadRoute,
   SettingsRoute: SettingsRoute,
+  TestRoute: TestRoute,
   WriteRoute: WriteRoute,
 }
 export const routeTree = rootRouteImport
