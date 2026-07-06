@@ -1,7 +1,14 @@
 /**
- * Guarded Service Worker registration.
- * Registers only in production, outside Lovable preview / iframes,
- * and supports ?sw=off as a kill-switch.
+ * تسجيل Service Worker المُخصّص (public/sw.js) لدعم التشغيل Offline.
+ *
+ * يعمل فقط في:
+ *  - بناء الإنتاج (import.meta.env.PROD).
+ *  - خارج الـ iframe (أي ليس داخل معاينة Lovable المدمجة).
+ *  - خارج نطاقات معاينة Lovable (id-preview--…, preview--…, lovableproject*, beta.lovable.dev).
+ *  - عندما لا يكون ?sw=off موجوداً في الرابط (Kill-switch).
+ *
+ * داخل Capacitor WebView، السكيمة تكون https://localhost وهذه تسمح بتسجيل Service Worker،
+ * ما يوفر تشغيلاً Offline حقيقياً للـ APK بعد أول فتح.
  */
 
 const SW_URL = "/sw.js";
@@ -41,7 +48,8 @@ async function unregisterMatching(): Promise<void> {
     await Promise.allSettled(
       regs
         .filter((r) => {
-          const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
+          const url =
+            r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
           return url.endsWith(SW_URL);
         })
         .map((r) => r.unregister()),
@@ -59,14 +67,16 @@ export function registerPwa(): void {
     return;
   }
 
-  window.addEventListener("load", () => {
-    void (async () => {
-      try {
-        const { registerSW } = await import("virtual:pwa-register");
-        registerSW({ immediate: true });
-      } catch (err) {
-        console.warn("PWA registration failed", err);
-      }
-    })();
-  });
+  const register = () => {
+    navigator.serviceWorker
+      .register(SW_URL, { scope: "/" })
+      .then((reg) => {
+        // فحص تحديث دوري بسيط
+        setInterval(() => reg.update().catch(() => undefined), 60 * 60 * 1000);
+      })
+      .catch((err) => console.warn("SW registration failed", err));
+  };
+
+  if (document.readyState === "complete") register();
+  else window.addEventListener("load", register, { once: true });
 }
