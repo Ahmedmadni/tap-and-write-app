@@ -9,23 +9,9 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
-    // المرحلة 4 — Prerender كل المسارات لبناء SPA static جاهز للتعبئة داخل APK عبر Capacitor.
-    // Service Worker المُخصّص في public/sw.js يوفّر التشغيل Offline بعد أول فتح.
-    prerender: {
-      enabled: true,
-      crawlLinks: true,
-      routes: [
-        "/",
-        "/read",
-        "/write",
-        "/erase",
-        "/lock",
-        "/history",
-        "/settings",
-        "/test",
-      ],
-    },
+    // Prerender معطّل مؤقتاً بسبب عدم تطابق preview-server-plugin (يتوقّع dist/server/server.js)
+    // مع مخرجات nitro/cloudflare-module (dist/server/index.mjs). الـ APK يستخدم server.url
+    // مع كاش Service Worker للتشغيل Offline بعد أول فتح.
   },
 });
