@@ -12,10 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
     // المرحلة 4 — Prerender كل المسارات لبناء SPA static جاهز للتعبئة داخل APK عبر Capacitor.
+    // Service Worker المُخصّص في public/sw.js يوفّر التشغيل Offline بعد أول فتح.
     prerender: {
       enabled: true,
       crawlLinks: true,
-      // كل مسارات التطبيق (يُستخدم كنقاط بداية للزحف).
       routes: [
         "/",
         "/read",

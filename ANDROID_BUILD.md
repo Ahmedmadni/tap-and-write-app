@@ -199,10 +199,17 @@ bun run build:mobile     # يبني SPA static + cap sync android
 ```
 ثم في Android Studio: **Build → Generate Signed Bundle / APK** مرة أخرى (نفس الـ keystore).
 
-> ✅ **الوضع الحالي (Offline كامل)**: `capacitor.config.ts` بدون `server.url`،
-> والتطبيق يُبنى كملفات ثابتة داخل `dist/public` عبر prerender في `vite.config.ts`،
-> ثم Capacitor يعبّئها داخل APK. **التطبيق يعمل بدون إنترنت** بعد التثبيت.
-> أي تعديل يتطلب `bun run build:mobile` + إعادة بناء APK.
+> ✅ **الوضع الحالي (Offline كامل + Service Worker)**:
+> - `capacitor.config.ts` بدون `server.url` و `webDir: "dist/public"`.
+> - `vite.config.ts` يعمل prerender لكل المسارات إلى ملفات HTML ثابتة.
+> - `public/sw.js` هو Service Worker مُخصّص يخزّن الـ App Shell عند أول تشغيل،
+>   ويقدّم HTML عبر NetworkFirst، والأصول عبر CacheFirst.
+> - داخل Capacitor WebView على Android، السكيمة تكون `https://localhost` — وهي
+>   من الأصول الآمنة (Secure Origin) لذلك تسجيل الـ Service Worker يعمل بشكل طبيعي،
+>   ما يعني أن التطبيق يعمل **بدون إنترنت** حتى بعد إعادة تشغيل الجهاز.
+> - التسجيل يتم من `src/lib/pwa/register.ts` مع حماية لمنع تفعيله داخل معاينة Lovable.
+> - أي تعديل يتطلب `bun run build:mobile` + إعادة بناء APK.
+
 
 ---
 
