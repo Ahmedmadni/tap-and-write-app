@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings, ClipboardCheck } from "lucide-react";
+import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings, ClipboardCheck, Database } from "lucide-react";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 
 export const Route = createFileRoute("/")({
