@@ -93,6 +93,23 @@ function Home() {
           <span className="text-xs text-muted-foreground">›</span>
         </Link>
 
+        <Link
+          to="/cache-status"
+          className="mt-3 flex items-center justify-between rounded-2xl border border-border/60 bg-card p-4 text-sm transition hover:border-primary/40"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Database className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-foreground">حالة الكاش</p>
+              <p className="text-xs text-muted-foreground">تشخيص Service Worker والوضع Offline</p>
+            </div>
+          </div>
+          <span className="text-xs text-muted-foreground">›</span>
+        </Link>
+
+
         <section className="mt-8 rounded-2xl border border-border/60 bg-card/50 p-4 text-sm text-muted-foreground">
           <p className="leading-relaxed">
             <strong className="text-foreground">ملاحظة:</strong> Web NFC مدعوم على Chrome / Edge في Android فقط.
