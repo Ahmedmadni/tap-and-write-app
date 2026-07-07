@@ -13,6 +13,7 @@ import { Route as WriteRouteImport } from './routes/write'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReadRouteImport } from './routes/read'
+import { Route as NfcDebugRouteImport } from './routes/nfc-debug'
 import { Route as LockRouteImport } from './routes/lock'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EraseRouteImport } from './routes/erase'
@@ -37,6 +38,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReadRoute = ReadRouteImport.update({
   id: '/read',
   path: '/read',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NfcDebugRoute = NfcDebugRouteImport.update({
+  id: '/nfc-debug',
+  path: '/nfc-debug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LockRoute = LockRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/nfc-debug': typeof NfcDebugRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/nfc-debug': typeof NfcDebugRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/nfc-debug': typeof NfcDebugRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/erase'
     | '/history'
     | '/lock'
+    | '/nfc-debug'
     | '/read'
     | '/settings'
     | '/test'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/erase'
     | '/history'
     | '/lock'
+    | '/nfc-debug'
     | '/read'
     | '/settings'
     | '/test'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/erase'
     | '/history'
     | '/lock'
+    | '/nfc-debug'
     | '/read'
     | '/settings'
     | '/test'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   EraseRoute: typeof EraseRoute
   HistoryRoute: typeof HistoryRoute
   LockRoute: typeof LockRoute
+  NfcDebugRoute: typeof NfcDebugRoute
   ReadRoute: typeof ReadRoute
   SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/read'
       fullPath: '/read'
       preLoaderRoute: typeof ReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nfc-debug': {
+      id: '/nfc-debug'
+      path: '/nfc-debug'
+      fullPath: '/nfc-debug'
+      preLoaderRoute: typeof NfcDebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lock': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   EraseRoute: EraseRoute,
   HistoryRoute: HistoryRoute,
   LockRoute: LockRoute,
+  NfcDebugRoute: NfcDebugRoute,
   ReadRoute: ReadRoute,
   SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,

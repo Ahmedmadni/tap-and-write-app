@@ -91,6 +91,8 @@ export default defineConfig({
         "/settings",
         "/test",
         "/cache-status",
+        "/nfc-debug",
+
       ],
     },
 
