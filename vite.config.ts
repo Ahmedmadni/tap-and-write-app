@@ -91,8 +91,9 @@ export default defineConfig({
         "/settings",
         "/test",
         "/cache-status",
-
+      ],
     },
+
   },
   vite: {
     plugins: [serverEntryShimPlugin()],
