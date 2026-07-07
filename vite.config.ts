@@ -90,7 +90,8 @@ export default defineConfig({
         "/history",
         "/settings",
         "/test",
-      ],
+        "/cache-status",
+
     },
   },
   vite: {
