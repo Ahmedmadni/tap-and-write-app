@@ -7,8 +7,16 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  ShieldCheck,
+  Download,
 } from "lucide-react";
 import { AppShell } from "@/components/nfc/AppShell";
+import {
+  checkOfflineReadiness,
+  REQUIRED_APP_SHELL,
+  type OfflineReadiness,
+} from "@/lib/pwa/offline-readiness";
+
 
 export const Route = createFileRoute("/cache-status")({
   head: () => ({
