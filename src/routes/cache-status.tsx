@@ -211,6 +211,15 @@ function CacheStatusPage() {
           </button>
         </div>
 
+        {/* بطاقة الجاهزية للعمل Offline */}
+        <ReadinessCard
+          readiness={readiness}
+          warming={warming}
+          onWarm={() => void warmCache()}
+        />
+
+
+
         {/* بطاقة Service Worker */}
         <StatusCard
           title="Service Worker"
