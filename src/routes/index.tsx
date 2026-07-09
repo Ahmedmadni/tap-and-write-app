@@ -59,6 +59,7 @@ function Home() {
 
       <main className="mx-auto max-w-md px-4 pb-12">
         <SupportBanner />
+        <HomeStats />
 
         <div className="grid grid-cols-2 gap-3">
           {tiles.map(({ to, icon: Icon, label, desc }) => (
