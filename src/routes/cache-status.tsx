@@ -349,6 +349,79 @@ function EmptyRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   );
 }
 
+function ReadinessCard({
+  readiness,
+  warming,
+  onWarm,
+}: {
+  readiness: OfflineReadiness | null;
+  warming: boolean;
+  onWarm: () => void;
+}) {
+  const ready = readiness?.ready ?? false;
+  const total = REQUIRED_APP_SHELL.length;
+  const cached = readiness?.cachedPaths.length ?? 0;
+  const missing = readiness?.missingPaths ?? [];
+
+  return (
+    <section
+      className={`rounded-2xl border p-4 ${
+        ready
+          ? "border-emerald-500/40 bg-emerald-500/5"
+          : "border-amber-500/40 bg-amber-500/5"
+      }`}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          {ready ? (
+            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 text-amber-400" />
+          )}
+          جاهزية العمل بدون اتصال
+        </div>
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs ${
+            ready
+              ? "bg-emerald-500/15 text-emerald-300"
+              : "bg-amber-500/15 text-amber-300"
+          }`}
+        >
+          {cached}/{total}
+        </span>
+      </div>
+
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        {ready
+          ? "تم التحقق من تخزين جميع صفحات التطبيق الأساسية. يمكنك الآن الاعتماد على الوضع Offline بأمان."
+          : (readiness?.reason ??
+            "قيد الفحص… سيتم التأكد من تخزين App Shell قبل السماح بالاعتماد على الوضع Offline.")}
+      </p>
+
+      {!ready && missing.length > 0 && (
+        <>
+          <ul className="mt-3 max-h-32 space-y-0.5 overflow-y-auto text-[11px] text-muted-foreground">
+            {missing.map((p) => (
+              <li key={p} className="truncate" dir="ltr">
+                · {p} — غير مخزن
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={onWarm}
+            disabled={warming || !readiness?.swSupported}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
+          >
+            <Download className={`h-4 w-4 ${warming ? "animate-pulse" : ""}`} />
+            {warming ? "جارٍ التخزين…" : "تجهيز الكاش الآن"}
+          </button>
+        </>
+      )}
+    </section>
+  );
+}
+
+
 function shorten(url: string): string {
   try {
     const u = new URL(url);
