@@ -126,13 +126,17 @@ async function collectSnapshot(): Promise<Snapshot> {
 
 function CacheStatusPage() {
   const [snap, setSnap] = useState<Snapshot | null>(null);
+  const [readiness, setReadiness] = useState<OfflineReadiness | null>(null);
   const [loading, setLoading] = useState(true);
   const [clearing, setClearing] = useState(false);
+  const [warming, setWarming] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      setSnap(await collectSnapshot());
+      const [s, r] = await Promise.all([collectSnapshot(), checkOfflineReadiness()]);
+      setSnap(s);
+      setReadiness(r);
     } finally {
       setLoading(false);
     }
@@ -162,6 +166,27 @@ function CacheStatusPage() {
       setClearing(false);
     }
   };
+
+  /** يجبر Service Worker على تنزيل App Shell عبر إصدار طلبات لكل مسار مفقود.
+   *  الـ SW يعترض هذه الطلبات (NetworkFirst للتنقلات) ويخزّنها. */
+  const warmCache = async () => {
+    if (!readiness) return;
+    setWarming(true);
+    try {
+      await Promise.allSettled(
+        readiness.missingPaths.map((p) =>
+          fetch(p, { cache: "reload", credentials: "same-origin" }),
+        ),
+      );
+      // مهلة قصيرة كي يُنهي الـ SW الكتابة داخل Cache Storage.
+      await new Promise((r) => setTimeout(r, 400));
+      await refresh();
+    } finally {
+      setWarming(false);
+    }
+  };
+
+
 
   return (
     <AppShell title="حالة الكاش" icon={Database}>
