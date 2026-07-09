@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings, ClipboardCheck, Database, Bug } from "lucide-react";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
+import { HomeStats } from "@/components/nfc/HomeStats";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -58,6 +59,7 @@ function Home() {
 
       <main className="mx-auto max-w-md px-4 pb-12">
         <SupportBanner />
+        <HomeStats />
 
         <div className="grid grid-cols-2 gap-3">
           {tiles.map(({ to, icon: Icon, label, desc }) => (
