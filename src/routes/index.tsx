@@ -61,23 +61,27 @@ function Home() {
 
       <main className="mx-auto max-w-md px-4 pb-12">
         <SupportBanner />
+        <div className="mb-4">
+          <NfcHero3D />
+        </div>
         <HomeStats />
 
         <div className="grid grid-cols-2 gap-3">
           {tiles.map(({ to, icon: Icon, label, desc }) => (
-            <Link
-              key={to}
-              to={to}
-              className="group relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl border border-border/60 bg-card p-4 text-card-foreground transition hover:border-primary/40 hover:bg-card/80 active:scale-[0.98]"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
-                <Icon className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="text-base font-semibold">{label}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">{desc}</p>
-              </div>
-            </Link>
+            <TiltCard key={to} className="rounded-3xl">
+              <Link
+                to={to}
+                className="group relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl border border-border/60 bg-card p-4 text-card-foreground transition hover:border-primary/40 hover:bg-card/80 active:scale-[0.98]"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground" style={{ transform: "translateZ(30px)" }}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div style={{ transform: "translateZ(20px)" }}>
+                  <p className="text-base font-semibold">{label}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">{desc}</p>
+                </div>
+              </Link>
+            </TiltCard>
           ))}
         </div>
 
