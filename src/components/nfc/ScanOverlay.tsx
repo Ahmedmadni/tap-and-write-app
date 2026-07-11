@@ -1,4 +1,5 @@
 import { Nfc, X } from "lucide-react";
+import { ScanScene3D } from "./ScanScene3D";
 
 interface Props {
   label?: string;
@@ -9,12 +10,13 @@ interface Props {
 export function ScanOverlay({ label = "قرّب البطاقة من الجهاز", hint, onCancel }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-xl">
-      <div className="relative flex h-56 w-56 items-center justify-center">
-        <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
-        <span className="absolute inset-6 animate-ping rounded-full bg-primary/30 [animation-delay:200ms]" />
-        <span className="absolute inset-12 animate-pulse rounded-full bg-primary/40" />
-        <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40">
-          <Nfc className="h-12 w-12" />
+      <div className="relative">
+        <ScanScene3D />
+        <div className="pointer-events-none absolute inset-x-0 -bottom-2 flex justify-center">
+          <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
+            <Nfc className="h-3.5 w-3.5" />
+            جاهز للمسح
+          </div>
         </div>
       </div>
       <p className="mt-8 text-lg font-medium">{label}</p>
