@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings, ClipboardCheck, Database, Bug } from "lucide-react";
 import { SupportBanner } from "@/components/nfc/SupportBanner";
 import { HomeStats } from "@/components/nfc/HomeStats";
+import { NfcHero3D } from "@/components/nfc/NfcHero3D";
+import { TiltCard } from "@/components/nfc/TiltCard";
 
 export const Route = createFileRoute("/")({
   head: () => ({
