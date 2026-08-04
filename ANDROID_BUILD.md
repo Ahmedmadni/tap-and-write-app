@@ -1,5 +1,23 @@
 # دليل تحويل التطبيق إلى APK عبر Android Studio (تفصيلي)
 
+> **تحديث مهم:** مجلد `android/` أصبح مُنشأً ومُهيّأً داخل المشروع، فلا حاجة لـ `cap add android`.
+> - اسم التطبيق: **NFC PRO**
+> - Package ID: **com.ahmedmadni.nfcpro**
+> - Version Name: **0.01** — Version Code: **1**
+> - صلاحيات NFC مضافة مسبقاً في `AndroidManifest.xml` مع `nfc_tech_filter.xml`.
+> - NFC الأصلي مفعّل عبر plugin `@exxili/capacitor-nfc` (يعمل تلقائياً داخل التطبيق، وWeb NFC داخل المتصفح).
+> - التطبيق يعمل من ملفات محلية داخل الحزمة (بدون `server.url`).
+>
+> **بعد أي تعديل:**
+> ```bash
+> bun install
+> bun run build:mobile      # vite build + cap sync android
+> bunx cap open android
+> ```
+> بناء Debug: `cd android && ./gradlew assembleDebug`
+> بناء Release: `cd android && ./gradlew assembleRelease` (بعد ضبط التوقيع)
+
+
 > هذا الدليل يفترض أنك **لم تستخدم Android Studio من قبل**. كل خطوة مشروحة بالتفصيل.
 > النظام: Windows / macOS / Linux — الأوامر متشابهة.
 
