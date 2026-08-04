@@ -218,7 +218,7 @@ bun run build:mobile     # يبني SPA static + cap sync android
 ثم في Android Studio: **Build → Generate Signed Bundle / APK** مرة أخرى (نفس الـ keystore).
 
 > ✅ **الوضع الحالي (Offline كامل + Service Worker)**:
-> - `capacitor.config.ts` بدون `server.url` و `webDir: "dist/public"`.
+> - `capacitor.config.ts` بدون `server.url` و `webDir: "dist/client"`.
 > - `vite.config.ts` يعمل prerender لكل المسارات إلى ملفات HTML ثابتة.
 > - `public/sw.js` هو Service Worker مُخصّص يخزّن الـ App Shell عند أول تشغيل،
 >   ويقدّم HTML عبر NetworkFirst، والأصول عبر CacheFirst.
@@ -243,7 +243,8 @@ bun run build:mobile     # يبني SPA static + cap sync android
 | `NDEFReader is not defined` داخل التطبيق | حدّث **Android System WebView** من Play |
 | `Cleartext HTTP traffic not permitted` | لا تستخدم http://، فقط https:// |
 | `Installation blocked` على الهاتف | فعّل تثبيت من مصادر غير معروفة لتطبيق الملفات |
-| `dist/public not found` عند `cap sync` | نفّذ `bun run build` أولاً |
+| `dist/client not found` عند `cap sync` | نفّذ `bun run build` أولاً |
+| `Could not read script ...\capacitor-cordova-android-plugins\cordova.variables.gradle` | مجلد `android/capacitor-cordova-android-plugins` مولَّد ولا يُحفظ في Git. نفّذ `bun install` ثم `bun run build:mobile` (بناء + `cap sync android`) قبل فتح المشروع في Android Studio |
 
 ---
 
@@ -289,6 +290,6 @@ bunx cap sync android
 لبناء SPA offline:
 
 1. احذف `server.url` من `capacitor.config.ts`.
-2. `bun run build` (يبني إلى `dist/public`).
+2. `bun run build` (يبني إلى `dist/client`).
 3. `bunx cap sync android`.
 4. أعِد بناء APK من Android Studio.

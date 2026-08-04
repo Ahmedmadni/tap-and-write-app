@@ -97,6 +97,24 @@ export default defineConfig({
     },
 
   },
+  /**
+   * داخل sandbox الخاص بـ Lovable يفرض `@lovable.dev/vite-tanstack-config` مخرجات
+   * nitro على `dist/` (`dist/client` + `dist/server`). خارج الـ sandbox — أي على جهاز
+   * المطوّر وفي أي CI — يعود nitro إلى مساره الافتراضي `.output/`، فلا يوجد
+   * `dist/client` الذي يشير إليه `webDir` في capacitor.config.ts، فتفشل مرحلة
+   * `copy` داخل `cap sync android` ومعها توليد ملفات Cordova/Gradle
+   * (`android/capacitor-cordova-android-plugins/cordova.variables.gradle`).
+   *
+   * تثبيت مسار المخرجات هنا يجعل البناء متطابقاً في كل البيئات ويُبقي
+   * serverEntryShimPlugin (الذي يكتب `dist/server/server.js`) صالحاً للـ prerender.
+   */
+  nitro: {
+    output: {
+      dir: "dist",
+      serverDir: "dist/server",
+      publicDir: "dist/client",
+    },
+  },
   vite: {
     plugins: [serverEntryShimPlugin()],
   },
