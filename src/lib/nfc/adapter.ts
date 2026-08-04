@@ -1,16 +1,10 @@
 /**
  * طبقة تجريد فوق Web NFC و Capacitor Native NFC.
  *
- * - على المتصفح (Chrome/Android): تستخدم NDEFReader القياسي.
- * - داخل تطبيق Capacitor: تحاول تحميل plugin `@capawesome-team/capacitor-nfc`
- *   ديناميكياً. لو غير مثبّت، ترجع تلقائياً لـ Web NFC (لأن WebView
- *   على Android 10+ يدعم NDEFReader بشكل جيد عادةً).
+ * - داخل تطبيق Capacitor (Android/iOS): تستخدم plugin أصلي `@exxili/capacitor-nfc`.
+ * - على المتصفح (Chrome Android): تستخدم NDEFReader القياسي (Web NFC).
  *
- * لتفعيل الطبقة الأصلية بالكامل:
- *   bun add @capawesome-team/capacitor-nfc
- *   bunx cap sync android
- *
- * ثم استخدم الأداة كما هي — الكود يكتشف الـ plugin تلقائياً.
+ * الاختيار تلقائي: لو `Capacitor.isNativePlatform()` صحيح والـ plugin متاح → native.
  */
 
 import type { DecodedRecord, ScanResult } from "./types";
@@ -18,21 +12,39 @@ import { decodeRecord } from "./decoder";
 
 export type Platform = "web" | "native" | "unavailable";
 
-let cachedPlatform: Platform | null = null;
-let cachedNativePlugin: unknown = null;
+type NativeRecord = { type: string; payload: number[] };
+type NativeTagInfo = { uid?: string; techTypes?: string[]; maxSize?: number; type?: string };
+type NativeReadData = {
+  numberArray: () => { messages: { records: NativeRecord[] }[]; tagInfo?: NativeTagInfo };
+};
+type NativePlugin = {
+  NFC: {
+    isSupported: () => Promise<{ supported: boolean }>;
+    startScan: (o?: { mode?: string }) => Promise<void>;
+    cancelScan: () => Promise<void>;
+    writeNDEF: (o: { records: { type: string; payload: Uint8Array }[]; rawMode?: boolean }) => Promise<void>;
+    cancelWriteAndroid: () => Promise<void>;
+    onRead: (cb: (d: NativeReadData) => void) => () => void;
+    onWrite: (cb: () => void) => () => void;
+    onError: (cb: (e: { error: string }) => void) => () => void;
+  };
+};
 
-async function tryLoadNativePlugin(): Promise<unknown> {
+let cachedPlatform: Platform | null = null;
+let cachedNativePlugin: NativePlugin | null = null;
+
+async function tryLoadNativePlugin(): Promise<NativePlugin | null> {
   if (cachedNativePlugin) return cachedNativePlugin;
   try {
+    if (typeof window === "undefined") return null;
     const capName = "@capacitor/core";
     const cap = await import(/* @vite-ignore */ capName).catch(() => null);
     const Capacitor = (cap as { Capacitor?: { isNativePlatform: () => boolean } } | null)
       ?.Capacitor;
     if (!Capacitor?.isNativePlatform?.()) return null;
-    // dynamic — الـ plugin قد لا يكون مثبّتاً بعد
-    const pluginName = "@capawesome-team/capacitor-nfc";
-    const mod = await import(/* @vite-ignore */ pluginName).catch(() => null);
-    if (!mod) return null;
+    const pluginName = "@exxili/capacitor-nfc";
+    const mod = (await import(/* @vite-ignore */ pluginName).catch(() => null)) as NativePlugin | null;
+    if (!mod?.NFC) return null;
     cachedNativePlugin = mod;
     return mod;
   } catch {
@@ -62,46 +74,71 @@ export interface ReadOptions {
   onError?: (err: unknown) => void;
 }
 
+const URI_PREFIXES = [
+  "",
+  "http://www.",
+  "https://www.",
+  "http://",
+  "https://",
+  "tel:",
+  "mailto:",
+];
+
+/** يحوّل سجل أصلي (type + bytes) إلى DecodedRecord عبر decodeRecord الحالي. */
+function nativeToDecoded(r: NativeRecord): DecodedRecord {
+  const bytes = new Uint8Array(r.payload ?? []);
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const t = r.type ?? "";
+  if (t === "T" || t === "text") {
+    // payload: [status(lang len)] [lang] [text]
+    const langLen = bytes.length ? bytes[0] & 0x3f : 0;
+    const body = bytes.subarray(1 + langLen);
+    const lang = new TextDecoder().decode(bytes.subarray(1, 1 + langLen));
+    return decodeRecord({
+      recordType: "text",
+      lang,
+      data: new DataView(body.buffer, body.byteOffset, body.byteLength),
+    } as NDEFRecord);
+  }
+  if (t === "U" || t === "url") {
+    const idx = bytes.length ? bytes[0] : 0;
+    const rest = new TextDecoder().decode(bytes.subarray(1));
+    const full = (URI_PREFIXES[idx] ?? "") + rest;
+    const enc = new TextEncoder().encode(full);
+    return decodeRecord({
+      recordType: "url",
+      data: new DataView(enc.buffer, enc.byteOffset, enc.byteLength),
+    } as NDEFRecord);
+  }
+  if (t.includes("/")) {
+    return decodeRecord({ recordType: "mime", mediaType: t, data: view } as NDEFRecord);
+  }
+  return decodeRecord({ recordType: t || "unknown", data: view } as NDEFRecord);
+}
+
 export async function startRead(opts: ReadOptions): Promise<void> {
   const platform = await getPlatform();
   if (platform === "native") {
-    const mod = cachedNativePlugin as {
-      Nfc: {
-        startScanSession: (o?: unknown) => Promise<void>;
-        stopScanSession: () => Promise<void>;
-        addListener: (
-          ev: string,
-          cb: (e: { nfcTag?: { id?: number[]; message?: { records?: unknown[] } } }) => void,
-        ) => Promise<{ remove: () => void }>;
-      };
-    };
-    const handle = await mod.Nfc.addListener("nfcTagScanned", (e) => {
-      const uidBytes = e.nfcTag?.id ?? [];
-      const uid = uidBytes.map((b) => b.toString(16).padStart(2, "0")).join(":");
-      const rawRecords = (e.nfcTag?.message?.records ?? []) as Array<{
-        type?: number[];
-        payload?: number[];
-        typeNameFormat?: number;
-      }>;
-      const decoded: DecodedRecord[] = rawRecords.map((r) => {
-        const type = r.type ? new TextDecoder().decode(new Uint8Array(r.type)) : "";
-        const payload = r.payload ? new Uint8Array(r.payload) : new Uint8Array();
-        return decodeRecord({
-          recordType: type || "unknown",
-          data: new DataView(payload.buffer),
-        } as NDEFRecord);
-      });
+    const mod = cachedNativePlugin!;
+    const offRead = mod.NFC.onRead((data) => {
+      const parsed = data.numberArray();
+      const records: DecodedRecord[] = [];
+      for (const m of parsed.messages ?? []) {
+        for (const r of m.records ?? []) records.push(nativeToDecoded(r));
+      }
       opts.onReading({
-        serialNumber: uid,
-        records: decoded,
+        serialNumber: parsed.tagInfo?.uid ?? "",
+        records,
         timestamp: Date.now(),
       });
     });
+    const offErr = mod.NFC.onError((e) => opts.onError?.(new Error(e.error)));
     opts.signal?.addEventListener("abort", () => {
-      handle.remove();
-      mod.Nfc.stopScanSession().catch(() => {});
+      offRead();
+      offErr();
+      mod.NFC.cancelScan().catch(() => {});
     });
-    await mod.Nfc.startScanSession();
+    await mod.NFC.startScan();
     return;
   }
   if (platform === "web") {
@@ -120,43 +157,87 @@ export async function startRead(opts: ReadOptions): Promise<void> {
   throw new Error("NFC غير متاح على هذا الجهاز.");
 }
 
+function dataToBytes(data: NDEFRecordInit["data"]): Uint8Array {
+  if (typeof data === "string") return new TextEncoder().encode(data);
+  if (data instanceof ArrayBuffer) return new Uint8Array(data);
+  if (ArrayBuffer.isView(data)) {
+    const v = data as ArrayBufferView;
+    return new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+  }
+  return new Uint8Array();
+}
+
+/** يحوّل NDEFRecordInit (صيغة Web NFC) إلى سجل خام للـ plugin الأصلي. */
+function toNativeRecord(r: NDEFRecordInit): { type: string; payload: Uint8Array } {
+  const bytes = dataToBytes(r.data);
+  if (r.recordType === "text") {
+    const lang = new TextEncoder().encode((r.lang || "ar").slice(0, 63));
+    const out = new Uint8Array(1 + lang.length + bytes.length);
+    out[0] = lang.length; // UTF-8
+    out.set(lang, 1);
+    out.set(bytes, 1 + lang.length);
+    return { type: "T", payload: out };
+  }
+  if (r.recordType === "url") {
+    const full = typeof r.data === "string" ? r.data : new TextDecoder().decode(bytes);
+    let idx = 0;
+    let rest = full;
+    for (let i = URI_PREFIXES.length - 1; i >= 1; i--) {
+      if (full.startsWith(URI_PREFIXES[i])) {
+        idx = i;
+        rest = full.slice(URI_PREFIXES[i].length);
+        break;
+      }
+    }
+    const restBytes = new TextEncoder().encode(rest);
+    const out = new Uint8Array(1 + restBytes.length);
+    out[0] = idx;
+    out.set(restBytes, 1);
+    return { type: "U", payload: out };
+  }
+  if (r.recordType === "mime") {
+    return { type: r.mediaType || "text/plain", payload: bytes };
+  }
+  if (r.recordType === "empty") {
+    return { type: "", payload: new Uint8Array() };
+  }
+  return { type: r.recordType, payload: bytes };
+}
+
 export async function writeRecords(
   records: NDEFRecordInit[],
   opts: { overwrite?: boolean; signal?: AbortSignal } = {},
 ): Promise<void> {
   const platform = await getPlatform();
   if (platform === "native") {
-    const mod = cachedNativePlugin as {
-      Nfc: {
-        write: (o: { message: { records: unknown[] } }) => Promise<void>;
-        startScanSession: () => Promise<void>;
-        stopScanSession: () => Promise<void>;
+    const mod = cachedNativePlugin!;
+    const nativeRecords = records.map(toNativeRecord);
+    await new Promise<void>((resolve, reject) => {
+      const offWrite = mod.NFC.onWrite(() => {
+        cleanup();
+        resolve();
+      });
+      const offErr = mod.NFC.onError((e) => {
+        cleanup();
+        reject(new Error(e.error));
+      });
+      const onAbort = () => {
+        cleanup();
+        mod.NFC.cancelWriteAndroid().catch(() => {});
+        reject(new DOMException("aborted", "AbortError"));
       };
-    };
-    // تحويل السجلات لصيغة plugin الأصلية (تقريبية — قد تحتاج تعديل حسب الـ API)
-    const nativeRecords = records.map((r) => ({
-      type: Array.from(new TextEncoder().encode(r.recordType)),
-      payload:
-        typeof r.data === "string"
-          ? Array.from(new TextEncoder().encode(r.data))
-          : r.data instanceof ArrayBuffer
-            ? Array.from(new Uint8Array(r.data))
-            : ArrayBuffer.isView(r.data)
-              ? Array.from(
-                  new Uint8Array(
-                    (r.data as ArrayBufferView).buffer,
-                    (r.data as ArrayBufferView).byteOffset,
-                    (r.data as ArrayBufferView).byteLength,
-                  ),
-                )
-              : [],
-    }));
-    await mod.Nfc.startScanSession();
-    try {
-      await mod.Nfc.write({ message: { records: nativeRecords } });
-    } finally {
-      await mod.Nfc.stopScanSession().catch(() => {});
-    }
+      function cleanup() {
+        offWrite();
+        offErr();
+        opts.signal?.removeEventListener("abort", onAbort);
+      }
+      opts.signal?.addEventListener("abort", onAbort);
+      // rawMode: نُنسّق T/U يدوياً أعلاه، فنكتب البايتات كما هي.
+      mod.NFC.writeNDEF({ records: nativeRecords, rawMode: true }).catch((err) => {
+        cleanup();
+        reject(err);
+      });
+    });
     return;
   }
   if (platform === "web") {
@@ -170,21 +251,7 @@ export async function writeRecords(
 export async function makeReadOnly(opts: { signal?: AbortSignal } = {}): Promise<void> {
   const platform = await getPlatform();
   if (platform === "native") {
-    const mod = cachedNativePlugin as {
-      Nfc: {
-        makeReadOnly?: () => Promise<void>;
-        startScanSession: () => Promise<void>;
-        stopScanSession: () => Promise<void>;
-      };
-    };
-    if (!mod.Nfc.makeReadOnly) throw new Error("قفل البطاقة غير مدعوم على هذا الـ plugin.");
-    await mod.Nfc.startScanSession();
-    try {
-      await mod.Nfc.makeReadOnly();
-    } finally {
-      await mod.Nfc.stopScanSession().catch(() => {});
-    }
-    return;
+    throw new Error("قفل البطاقة غير مدعوم في وضع NFC الأصلي حالياً.");
   }
   if (platform === "web") {
     const reader = new NDEFReader();
