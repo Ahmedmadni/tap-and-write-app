@@ -10,24 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WriteRouteImport } from './routes/write'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReadRouteImport } from './routes/read'
-import { Route as NfcDebugRouteImport } from './routes/nfc-debug'
 import { Route as LockRouteImport } from './routes/lock'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EraseRouteImport } from './routes/erase'
-import { Route as CacheStatusRouteImport } from './routes/cache-status'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WriteRoute = WriteRouteImport.update({
   id: '/write',
   path: '/write',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -38,11 +30,6 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReadRoute = ReadRouteImport.update({
   id: '/read',
   path: '/read',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NfcDebugRoute = NfcDebugRouteImport.update({
-  id: '/nfc-debug',
-  path: '/nfc-debug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LockRoute = LockRouteImport.update({
@@ -60,11 +47,6 @@ const EraseRoute = EraseRouteImport.update({
   path: '/erase',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CacheStatusRoute = CacheStatusRouteImport.update({
-  id: '/cache-status',
-  path: '/cache-status',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -73,90 +55,62 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/cache-status': typeof CacheStatusRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
-  '/nfc-debug': typeof NfcDebugRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/write': typeof WriteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/cache-status': typeof CacheStatusRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
-  '/nfc-debug': typeof NfcDebugRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/write': typeof WriteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/cache-status': typeof CacheStatusRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
-  '/nfc-debug': typeof NfcDebugRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/write': typeof WriteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/cache-status'
     | '/erase'
     | '/history'
     | '/lock'
-    | '/nfc-debug'
     | '/read'
     | '/settings'
-    | '/test'
     | '/write'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/cache-status'
-    | '/erase'
-    | '/history'
-    | '/lock'
-    | '/nfc-debug'
-    | '/read'
-    | '/settings'
-    | '/test'
-    | '/write'
+  to: '/' | '/erase' | '/history' | '/lock' | '/read' | '/settings' | '/write'
   id:
     | '__root__'
     | '/'
-    | '/cache-status'
     | '/erase'
     | '/history'
     | '/lock'
-    | '/nfc-debug'
     | '/read'
     | '/settings'
-    | '/test'
     | '/write'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CacheStatusRoute: typeof CacheStatusRoute
   EraseRoute: typeof EraseRoute
   HistoryRoute: typeof HistoryRoute
   LockRoute: typeof LockRoute
-  NfcDebugRoute: typeof NfcDebugRoute
   ReadRoute: typeof ReadRoute
   SettingsRoute: typeof SettingsRoute
-  TestRoute: typeof TestRoute
   WriteRoute: typeof WriteRoute
 }
 
@@ -167,13 +121,6 @@ declare module '@tanstack/react-router' {
       path: '/write'
       fullPath: '/write'
       preLoaderRoute: typeof WriteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -188,13 +135,6 @@ declare module '@tanstack/react-router' {
       path: '/read'
       fullPath: '/read'
       preLoaderRoute: typeof ReadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nfc-debug': {
-      id: '/nfc-debug'
-      path: '/nfc-debug'
-      fullPath: '/nfc-debug'
-      preLoaderRoute: typeof NfcDebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lock': {
@@ -218,13 +158,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EraseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cache-status': {
-      id: '/cache-status'
-      path: '/cache-status'
-      fullPath: '/cache-status'
-      preLoaderRoute: typeof CacheStatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -237,26 +170,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CacheStatusRoute: CacheStatusRoute,
   EraseRoute: EraseRoute,
   HistoryRoute: HistoryRoute,
   LockRoute: LockRoute,
-  NfcDebugRoute: NfcDebugRoute,
   ReadRoute: ReadRoute,
   SettingsRoute: SettingsRoute,
-  TestRoute: TestRoute,
   WriteRoute: WriteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
