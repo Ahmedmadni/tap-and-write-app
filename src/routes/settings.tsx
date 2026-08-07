@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Settings as SettingsIcon, Trash2, Smartphone, Info } from "lucide-react";
+import { Settings as SettingsIcon, Trash2, ShieldCheck, Info } from "lucide-react";
+import { useState } from "react";
 import { AppShell } from "@/components/nfc/AppShell";
 import { clearHistory } from "@/lib/storage/history";
+import { adsAvailable, initAds } from "@/lib/ads/ads";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "الإعدادات" }, { name: "description", content: "إعدادات التطبيق." }] }),
@@ -9,18 +11,41 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
+  const [consentMsg, setConsentMsg] = useState<string | null>(null);
+
+  async function openConsent() {
+    if (!adsAvailable()) {
+      setConsentMsg("إعدادات الخصوصية الإعلانية متاحة داخل تطبيق Android فقط.");
+      return;
+    }
+    const mod = await initAds();
+    try {
+      await mod?.AdMob.showConsentForm();
+    } catch {
+      setConsentMsg("تعذّر فتح نموذج الموافقة حالياً.");
+    }
+  }
+
   return (
     <AppShell title="الإعدادات" icon={SettingsIcon}>
       <div className="space-y-3">
         <section className="rounded-2xl border border-border/60 bg-card p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
-            <Smartphone className="h-4 w-4 text-primary" />
-            تثبيت كتطبيق
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            الخصوصية والإعلانات
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            افتح القائمة في Chrome على Android، ثم اختر "إضافة إلى الشاشة الرئيسية" لتثبيت التطبيق كأيقونة مستقلة.
+            يمكنك مراجعة موافقتك على الإعلانات المخصّصة في أي وقت.
           </p>
+          <button
+            onClick={openConsent}
+            className="mt-3 w-full rounded-xl bg-secondary py-2.5 text-sm font-medium text-secondary-foreground hover:bg-secondary/70"
+          >
+            إعدادات الموافقة الإعلانية
+          </button>
+          {consentMsg && <p className="mt-2 text-xs text-muted-foreground">{consentMsg}</p>}
         </section>
+
 
         <section className="rounded-2xl border border-border/60 bg-card p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
