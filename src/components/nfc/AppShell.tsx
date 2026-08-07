@@ -13,7 +13,13 @@ interface Props {
 }
 
 
-export function AppShell({ title, icon: Icon, children, back = true }: Props) {
+export function AppShell({
+  title,
+  icon: Icon,
+  children,
+  back = true,
+  adsDisabled = false,
+}: Props) {
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground pb-10">
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -33,7 +39,11 @@ export function AppShell({ title, icon: Icon, children, back = true }: Props) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-md px-4 pt-5">{children}</main>
+      <main className="mx-auto max-w-md px-4 pt-5">
+        {children}
+        <AppFooter adsDisabled={adsDisabled} />
+      </main>
+
     </div>
   );
 }
