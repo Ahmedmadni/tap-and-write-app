@@ -250,46 +250,66 @@ bun run build:mobile     # يبني SPA static + cap sync android
 
 
 ## المرحلة 3 — تفعيل Native NFC (اختياري)
+## بناء Release APK و AAB
 
-التطبيق الآن يستخدم طبقة تجريد `src/lib/nfc/adapter.ts` تختار تلقائياً:
-- **Web NFC** (NDEFReader) داخل Chrome/WebView — الوضع الافتراضي.
-- **Native NFC** عبر Capacitor plugin — عند تثبيته.
+### 1) تجهيز التوقيع (Signing)
 
-### خطوات تفعيل Native NFC
-
-داخل مجلد المشروع (بعد سحبه من GitHub):
+أنشئ keystore محلياً (لا يُرفع إلى Git إطلاقاً):
 
 ```bash
-bun add @capawesome-team/capacitor-nfc
-bunx cap sync android
+keytool -genkey -v -keystore nfcpro-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias nfcpro
 ```
 
-ثم افتح `android/app/src/main/AndroidManifest.xml` وتأكد من:
+ثم انسخ `android/keystore.properties.example` إلى `android/keystore.properties` واملأ:
 
-```xml
-<uses-permission android:name="android.permission.NFC" />
-<uses-feature android:name="android.hardware.nfc" android:required="true" />
+```
+storeFile=/absolute/path/to/nfcpro-release.jks
+storePassword=...
+keyAlias=nfcpro
+keyPassword=...
+admobAppId=ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY
 ```
 
-لفتح التطبيق تلقائياً عند مسح بطاقة من خارجه، أضِف داخل `<activity>` الرئيسي:
+بدلاً من الملف يمكن استخدام متغيرات البيئة:
+`ANDROID_KEYSTORE_FILE` / `ANDROID_KEYSTORE_PASSWORD` / `ANDROID_KEY_ALIAS` / `ANDROID_KEY_PASSWORD` / `ADMOB_APP_ID`.
 
-```xml
-<intent-filter>
-  <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-  <category android:name="android.intent.category.DEFAULT" />
-  <data android:mimeType="text/plain" />
-</intent-filter>
+الملف `android/keystore.properties` و`*.jks` مُدرجة في `.gitignore`.
+
+### 2) الأوامر
+
+```bash
+bun install
+bun run build:mobile          # بناء الويب + cap sync android
+cd android
+./gradlew assembleDebug       # Debug APK
+./gradlew assembleRelease     # Release APK  → app/build/outputs/apk/release/
+./gradlew bundleRelease       # Release AAB  → app/build/outputs/bundle/release/   (للنشر على Google Play)
 ```
 
-بعد ذلك، الـ adapter سيكتشف الـ plugin ويستخدمه تلقائياً — لا حاجة لتغيير أي كود.
+---
 
-### ملاحظة عن `server.url`
+## Google AdMob
 
-`capacitor.config.ts` حالياً يشير إلى `https://tap-and-write-app.lovable.app`. الـ plugin الأصلي
-قد لا يعمل بشكل موثوق مع WebView خارجي المصدر. للاستفادة الكاملة من Native NFC، حوّل التطبيق
-لبناء SPA offline:
+- الإعداد المركزي في `src/lib/ads/config.ts` (متغيرات بيئة `VITE_ADMOB_*`).
+- التهيئة والموافقة (UMP Consent) في `src/lib/ads/ads.ts` — تهيئة واحدة فقط، وأي فشل يُتجاهل ولا يؤثر على NFC.
+- مساحة البانر الموحّدة: `src/components/ads/AdBanner.tsx` داخل `AppFooter`.
+- **لا توجد معرفات إنتاجية في الكود.** عند غياب معرفاتك يستخدم التطبيق معرفات Google الرسمية للاختبار.
+- معرّف تطبيق AdMob في `AndroidManifest.xml` يُحقن عبر `manifestPlaceholders` من `keystore.properties` أو `ADMOB_APP_ID`.
 
-1. احذف `server.url` من `capacitor.config.ts`.
-2. `bun run build` (يبني إلى `dist/client`).
-3. `bunx cap sync android`.
-4. أعِد بناء APK من Android Studio.
+لتفعيل معرفاتك الحقيقية أنشئ `.env` في جذر المشروع:
+
+```
+VITE_ADMOB_APP_ID_ANDROID=ca-app-pub-XXXX~YYYY
+VITE_ADMOB_BANNER_ANDROID=ca-app-pub-XXXX/ZZZZ
+VITE_ADMOB_INTERSTITIAL_ANDROID=
+VITE_ADMOB_REWARDED_ANDROID=
+```
+
+---
+
+## ملاحظات NFC
+
+- الطبقة الموحّدة `src/lib/nfc/adapter.ts` تختار تلقائياً Native NFC (`@exxili/capacitor-nfc`) داخل التطبيق،
+  وWeb NFC داخل المتصفح.
+- كل عملية قراءة/كتابة تُسجّل حالة انشغال (`src/lib/nfc/busy.ts`) تُخفي الإعلانات تلقائياً أثناء العملية.
+- زر الرجوع في Android يُدار من `src/components/native/NativeBridge.tsx` ولا يُغلق التطبيق أثناء عملية NFC جارية.
