@@ -9,6 +9,7 @@
 
 import type { DecodedRecord, ScanResult } from "./types";
 import { decodeRecord } from "./decoder";
+import { setNfcBusy } from "./busy";
 
 export type Platform = "web" | "native" | "unavailable";
 
@@ -116,7 +117,7 @@ function nativeToDecoded(r: NativeRecord): DecodedRecord {
   return decodeRecord({ recordType: t || "unknown", data: view } as NDEFRecord);
 }
 
-export async function startRead(opts: ReadOptions): Promise<void> {
+async function startReadImpl(opts: ReadOptions): Promise<void> {
   const platform = await getPlatform();
   if (platform === "native") {
     const mod = cachedNativePlugin!;
@@ -204,7 +205,7 @@ function toNativeRecord(r: NDEFRecordInit): { type: string; payload: Uint8Array 
   return { type: r.recordType, payload: bytes };
 }
 
-export async function writeRecords(
+async function writeRecordsImpl(
   records: NDEFRecordInit[],
   opts: { overwrite?: boolean; signal?: AbortSignal } = {},
 ): Promise<void> {
@@ -286,9 +287,7 @@ export async function startRead(opts: ReadOptions): Promise<void> {
   try {
     await startReadImpl({
       ...opts,
-      onReading: (res) => {
-        opts.onReading(res);
-      },
+      onReading: opts.onReading,
     });
     if (!opts.signal) release();
   } catch (err) {
