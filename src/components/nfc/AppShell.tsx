@@ -1,13 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { AppFooter } from "@/components/nfc/AppFooter";
 
 interface Props {
   title: string;
   icon?: LucideIcon;
   children: ReactNode;
   back?: boolean;
+  /** إخفاء المساحة الإعلانية في هذه الصفحة (صفحات عمليات NFC الحساسة). */
+  adsDisabled?: boolean;
 }
+
 
 export function AppShell({ title, icon: Icon, children, back = true }: Props) {
   return (
