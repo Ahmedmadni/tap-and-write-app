@@ -9,6 +9,7 @@
 
 import type { DecodedRecord, ScanResult } from "./types";
 import { decodeRecord } from "./decoder";
+import { setNfcBusy } from "./busy";
 
 export type Platform = "web" | "native" | "unavailable";
 
@@ -116,7 +117,7 @@ function nativeToDecoded(r: NativeRecord): DecodedRecord {
   return decodeRecord({ recordType: t || "unknown", data: view } as NDEFRecord);
 }
 
-export async function startRead(opts: ReadOptions): Promise<void> {
+async function startReadImpl(opts: ReadOptions): Promise<void> {
   const platform = await getPlatform();
   if (platform === "native") {
     const mod = cachedNativePlugin!;
@@ -204,7 +205,7 @@ function toNativeRecord(r: NDEFRecordInit): { type: string; payload: Uint8Array 
   return { type: r.recordType, payload: bytes };
 }
 
-export async function writeRecords(
+async function writeRecordsImpl(
   records: NDEFRecordInit[],
   opts: { overwrite?: boolean; signal?: AbortSignal } = {},
 ): Promise<void> {
@@ -248,7 +249,7 @@ export async function writeRecords(
   throw new Error("NFC غير متاح على هذا الجهاز.");
 }
 
-export async function makeReadOnly(opts: { signal?: AbortSignal } = {}): Promise<void> {
+async function makeReadOnlyImpl(opts: { signal?: AbortSignal } = {}): Promise<void> {
   const platform = await getPlatform();
   if (platform === "native") {
     throw new Error("قفل البطاقة غير مدعوم في وضع NFC الأصلي حالياً.");
@@ -260,3 +261,59 @@ export async function makeReadOnly(opts: { signal?: AbortSignal } = {}): Promise
   }
   throw new Error("NFC غير متاح على هذا الجهاز.");
 }
+
+/* ------------------------------------------------------------------
+ * أغلفة تتبّع انشغال NFC — تُخفي الإعلانات أثناء أي عملية جارية.
+ * ------------------------------------------------------------------ */
+
+function releaseOnAbort(signal: AbortSignal | undefined, release: () => void) {
+  if (!signal) return;
+  if (signal.aborted) {
+    release();
+    return;
+  }
+  signal.addEventListener("abort", release, { once: true });
+}
+
+export async function startRead(opts: ReadOptions): Promise<void> {
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    setNfcBusy(false);
+  };
+  setNfcBusy(true);
+  releaseOnAbort(opts.signal, release);
+  try {
+    await startReadImpl({
+      ...opts,
+      onReading: opts.onReading,
+    });
+    if (!opts.signal) release();
+  } catch (err) {
+    release();
+    throw err;
+  }
+}
+
+export async function writeRecords(
+  records: NDEFRecordInit[],
+  opts: { overwrite?: boolean; signal?: AbortSignal } = {},
+): Promise<void> {
+  setNfcBusy(true);
+  try {
+    await writeRecordsImpl(records, opts);
+  } finally {
+    setNfcBusy(false);
+  }
+}
+
+export async function makeReadOnly(opts: { signal?: AbortSignal } = {}): Promise<void> {
+  setNfcBusy(true);
+  try {
+    await makeReadOnlyImpl(opts);
+  } finally {
+    setNfcBusy(false);
+  }
+}
+

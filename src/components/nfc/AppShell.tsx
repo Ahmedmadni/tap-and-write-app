@@ -1,15 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { AppFooter } from "@/components/nfc/AppFooter";
 
 interface Props {
   title: string;
   icon?: LucideIcon;
   children: ReactNode;
   back?: boolean;
+  /** إخفاء المساحة الإعلانية في هذه الصفحة (صفحات عمليات NFC الحساسة). */
+  adsDisabled?: boolean;
 }
 
-export function AppShell({ title, icon: Icon, children, back = true }: Props) {
+
+export function AppShell({
+  title,
+  icon: Icon,
+  children,
+  back = true,
+  adsDisabled = false,
+}: Props) {
   return (
     <div dir="rtl" className="min-h-screen bg-background text-foreground pb-10">
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -29,7 +39,11 @@ export function AppShell({ title, icon: Icon, children, back = true }: Props) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-md px-4 pt-5">{children}</main>
+      <main className="mx-auto max-w-md px-4 pt-5">
+        {children}
+        <AppFooter adsDisabled={adsDisabled} />
+      </main>
+
     </div>
   );
 }

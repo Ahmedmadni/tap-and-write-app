@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def localProps = new Properties()
+def localPropsFile = rootProject.file('keystore.properties')
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+
 android {
     namespace = "com.ahmedmadni.nfcpro"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -10,16 +16,41 @@ android {
         versionCode 1
         versionName "0.01"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // معرّف AdMob يُقرأ من keystore.properties أو من متغير بيئة ADMOB_APP_ID.
+        // القيمة الافتراضية هي معرّف الاختبار الرسمي من Google (وليس معرّفاً إنتاجياً).
+        manifestPlaceholders = [
+            admobAppId: (localProps.getProperty('admobAppId')
+                ?: System.getenv('ADMOB_APP_ID')
+                ?: 'ca-app-pub-3940256099942544~3347511713')
+        ]
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            // لا توجد أي مفاتيح أو كلمات مرور داخل المستودع.
+            // ضع القيم في android/keystore.properties (متجاهَل في Git) أو في متغيرات البيئة.
+            def storePath = localProps.getProperty('storeFile') ?: System.getenv('ANDROID_KEYSTORE_FILE')
+            if (storePath) {
+                storeFile file(storePath)
+                storePassword localProps.getProperty('storePassword') ?: System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias localProps.getProperty('keyAlias') ?: System.getenv('ANDROID_KEY_ALIAS')
+                keyPassword localProps.getProperty('keyPassword') ?: System.getenv('ANDROID_KEY_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            def storePath = localProps.getProperty('storeFile') ?: System.getenv('ANDROID_KEYSTORE_FILE')
+            if (storePath) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

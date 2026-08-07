@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { NativeBridge } from "../components/native/NativeBridge";
 
 function NotFoundComponent() {
   return (
@@ -77,19 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "NFC PRO — قراءة وكتابة بطاقات NFC" },
       { name: "description", content: "NFC Buddy reads and rewrites data on NFC-enabled cards and devices." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { name: "author", content: "أحمد المدني" },
+      { property: "og:title", content: "NFC PRO — قراءة وكتابة بطاقات NFC" },
       { property: "og:description", content: "NFC Buddy reads and rewrites data on NFC-enabled cards and devices." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "theme-color", content: "#0a0f1e" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "NFC Tools" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:title", content: "NFC PRO — قراءة وكتابة بطاقات NFC" },
       { name: "twitter:description", content: "NFC Buddy reads and rewrites data on NFC-enabled cards and devices." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1b3db35-7189-4e73-a2eb-7fcacbb1ebae/id-preview-7622adfe--ba8baf9b-fb32-4bfe-9541-6ea03fa50ab3.lovable.app-1781001067395.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1b3db35-7189-4e73-a2eb-7fcacbb1ebae/id-preview-7622adfe--ba8baf9b-fb32-4bfe-9541-6ea03fa50ab3.lovable.app-1781001067395.png" },
@@ -130,8 +128,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <NativeBridge />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
   );
 }
+
