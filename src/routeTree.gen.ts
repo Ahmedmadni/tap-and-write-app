@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WriteRouteImport } from './routes/write'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReadRouteImport } from './routes/read'
+import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as LockRouteImport } from './routes/lock'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EraseRouteImport } from './routes/erase'
@@ -32,6 +33,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReadRoute = ReadRouteImport.update({
   id: '/read',
   path: '/read',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LockRoute = LockRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/premium': typeof PremiumRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/premium': typeof PremiumRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/premium': typeof PremiumRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/erase'
     | '/history'
     | '/lock'
+    | '/premium'
     | '/read'
     | '/settings'
     | '/write'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/erase'
     | '/history'
     | '/lock'
+    | '/premium'
     | '/read'
     | '/settings'
     | '/write'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/erase'
     | '/history'
     | '/lock'
+    | '/premium'
     | '/read'
     | '/settings'
     | '/write'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   EraseRoute: typeof EraseRoute
   HistoryRoute: typeof HistoryRoute
   LockRoute: typeof LockRoute
+  PremiumRoute: typeof PremiumRoute
   ReadRoute: typeof ReadRoute
   SettingsRoute: typeof SettingsRoute
   WriteRoute: typeof WriteRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/read'
       fullPath: '/read'
       preLoaderRoute: typeof ReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lock': {
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   EraseRoute: EraseRoute,
   HistoryRoute: HistoryRoute,
   LockRoute: LockRoute,
+  PremiumRoute: PremiumRoute,
   ReadRoute: ReadRoute,
   SettingsRoute: SettingsRoute,
   WriteRoute: WriteRoute,
