@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { adsAvailable, hideBanner, showBanner } from "@/lib/ads/ads";
 import { BANNER_RESERVED_HEIGHT } from "@/lib/ads/config";
 import { useNfcBusy } from "@/lib/nfc/busy";
+import { useAdsEnabled } from "@/lib/auth/AuthProvider";
 
 interface Props {
   /** إخفاء المساحة كلياً (مثلاً في شاشات العمليات الحسّاسة). */
@@ -19,7 +20,8 @@ interface Props {
  */
 export function AdBanner({ disabled = false, className }: Props) {
   const nfcBusy = useNfcBusy();
-  const active = !disabled && !nfcBusy;
+  const adsEnabled = useAdsEnabled();
+  const active = adsEnabled && !disabled && !nfcBusy;
 
   useEffect(() => {
     if (!adsAvailable()) return;

@@ -12,9 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WriteRouteImport } from './routes/write'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReadRouteImport } from './routes/read'
+import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as LockRouteImport } from './routes/lock'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EraseRouteImport } from './routes/erase'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WriteRoute = WriteRouteImport.update({
@@ -32,6 +36,11 @@ const ReadRoute = ReadRouteImport.update({
   path: '/read',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LockRoute = LockRouteImport.update({
   id: '/lock',
   path: '/lock',
@@ -47,6 +56,21 @@ const EraseRoute = EraseRouteImport.update({
   path: '/erase',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,18 +79,26 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/premium': typeof PremiumRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/premium': typeof PremiumRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
@@ -74,9 +106,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
+  '/premium': typeof PremiumRoute
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
@@ -85,20 +121,39 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
     | '/erase'
     | '/history'
     | '/lock'
+    | '/premium'
     | '/read'
     | '/settings'
     | '/write'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/erase' | '/history' | '/lock' | '/read' | '/settings' | '/write'
-  id:
-    | '__root__'
+  to:
     | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
     | '/erase'
     | '/history'
     | '/lock'
+    | '/premium'
+    | '/read'
+    | '/settings'
+    | '/write'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/auth'
+    | '/erase'
+    | '/history'
+    | '/lock'
+    | '/premium'
     | '/read'
     | '/settings'
     | '/write'
@@ -106,9 +161,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   EraseRoute: typeof EraseRoute
   HistoryRoute: typeof HistoryRoute
   LockRoute: typeof LockRoute
+  PremiumRoute: typeof PremiumRoute
   ReadRoute: typeof ReadRoute
   SettingsRoute: typeof SettingsRoute
   WriteRoute: typeof WriteRoute
@@ -137,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lock': {
       id: '/lock'
       path: '/lock'
@@ -158,6 +224,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EraseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -170,9 +257,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   EraseRoute: EraseRoute,
   HistoryRoute: HistoryRoute,
   LockRoute: LockRoute,
+  PremiumRoute: PremiumRoute,
   ReadRoute: ReadRoute,
   SettingsRoute: SettingsRoute,
   WriteRoute: WriteRoute,
