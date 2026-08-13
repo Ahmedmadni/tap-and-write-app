@@ -15,6 +15,7 @@ import { Route as ReadRouteImport } from './routes/read'
 import { Route as LockRouteImport } from './routes/lock'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EraseRouteImport } from './routes/erase'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WriteRoute = WriteRouteImport.update({
@@ -47,6 +48,11 @@ const EraseRoute = EraseRouteImport.update({
   path: '/erase',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
   '/lock': typeof LockRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/erase'
     | '/history'
     | '/lock'
@@ -92,10 +102,19 @@ export interface FileRouteTypes {
     | '/settings'
     | '/write'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/erase' | '/history' | '/lock' | '/read' | '/settings' | '/write'
+  to:
+    | '/'
+    | '/auth'
+    | '/erase'
+    | '/history'
+    | '/lock'
+    | '/read'
+    | '/settings'
+    | '/write'
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/erase'
     | '/history'
     | '/lock'
@@ -106,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   EraseRoute: typeof EraseRoute
   HistoryRoute: typeof HistoryRoute
   LockRoute: typeof LockRoute
@@ -158,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EraseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -170,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   EraseRoute: EraseRoute,
   HistoryRoute: HistoryRoute,
   LockRoute: LockRoute,
