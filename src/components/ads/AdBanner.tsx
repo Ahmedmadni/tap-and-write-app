@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { adsAvailable, hideBanner, showBanner } from "@/lib/ads/ads";
 import { BANNER_RESERVED_HEIGHT } from "@/lib/ads/config";
 import { useNfcBusy } from "@/lib/nfc/busy";
+import { useAdsEnabled } from "@/lib/auth/AuthProvider";
 
 interface Props {
   /** إخفاء المساحة كلياً (مثلاً في شاشات العمليات الحسّاسة). */
