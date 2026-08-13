@@ -20,7 +20,8 @@ interface Props {
  */
 export function AdBanner({ disabled = false, className }: Props) {
   const nfcBusy = useNfcBusy();
-  const active = !disabled && !nfcBusy;
+  const adsEnabled = useAdsEnabled();
+  const active = adsEnabled && !disabled && !nfcBusy;
 
   useEffect(() => {
     if (!adsAvailable()) return;
