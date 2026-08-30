@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Settings as SettingsIcon, Trash2, ShieldCheck, Info } from "lucide-react";
-import { useState } from "react";
+import { Settings as SettingsIcon, Trash2, Info } from "lucide-react";
 import { AppShell } from "@/components/nfc/AppShell";
 import { clearHistory } from "@/lib/storage/history";
-import { adsAvailable, initAds } from "@/lib/ads/ads";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "الإعدادات" }, { name: "description", content: "إعدادات التطبيق." }] }),
