@@ -61,7 +61,7 @@ function Home() {
       </header>
 
       <main className="mx-auto max-w-md px-4 pb-12">
-        <SupportBanner />
+        
         <div className="mb-4">
           <NfcHero3D />
         </div>
