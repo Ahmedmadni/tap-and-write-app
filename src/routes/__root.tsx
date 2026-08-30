@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { NativeBridge } from "../components/native/NativeBridge";
+import { AuthProvider } from "../lib/auth/AuthProvider";
 
 function NotFoundComponent() {
   return (
