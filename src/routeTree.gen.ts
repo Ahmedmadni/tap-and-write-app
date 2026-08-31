@@ -20,6 +20,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicPlayRtdnRouteImport } from './routes/api/public/play-rtdn'
 
 const WriteRoute = WriteRouteImport.update({
   id: '/write',
@@ -76,6 +77,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPlayRtdnRoute = ApiPublicPlayRtdnRouteImport.update({
+  id: '/api/public/play-rtdn',
+  path: '/api/public/play-rtdn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
+  '/api/public/play-rtdn': typeof ApiPublicPlayRtdnRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
+  '/api/public/play-rtdn': typeof ApiPublicPlayRtdnRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/read': typeof ReadRoute
   '/settings': typeof SettingsRoute
   '/write': typeof WriteRoute
+  '/api/public/play-rtdn': typeof ApiPublicPlayRtdnRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/read'
     | '/settings'
     | '/write'
+    | '/api/public/play-rtdn'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/read'
     | '/settings'
     | '/write'
+    | '/api/public/play-rtdn'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/read'
     | '/settings'
     | '/write'
+    | '/api/public/play-rtdn'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   ReadRoute: typeof ReadRoute
   SettingsRoute: typeof SettingsRoute
   WriteRoute: typeof WriteRoute
+  ApiPublicPlayRtdnRoute: typeof ApiPublicPlayRtdnRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/play-rtdn': {
+      id: '/api/public/play-rtdn'
+      path: '/api/public/play-rtdn'
+      fullPath: '/api/public/play-rtdn'
+      preLoaderRoute: typeof ApiPublicPlayRtdnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReadRoute: ReadRoute,
   SettingsRoute: SettingsRoute,
   WriteRoute: WriteRoute,
+  ApiPublicPlayRtdnRoute: ApiPublicPlayRtdnRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
