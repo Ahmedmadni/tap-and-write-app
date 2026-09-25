@@ -34,9 +34,12 @@ async function getStore(): Promise<any> {
   if (!isPlayBillingAvailable()) throw new Error("Google Play Billing غير متاح على هذه المنصة");
   if (!storePromise) {
     storePromise = (async () => {
-      if (!cdv()) await import("cordova-plugin-purchase");
+      // الإضافة (cordova-plugin-purchase) تُحمّل تلقائياً داخل التطبيق الأصلي
+      // وتضع CdvPurchase في النطاق العام؛ ننتظر ظهورها بعد جهوزية الجسر.
+      for (let i = 0; i < 50 && !cdv(); i++) await new Promise((r) => setTimeout(r, 100));
       const CdvPurchase = cdv();
       if (!CdvPurchase) throw new Error("تعذّر تحميل إضافة الدفع");
+
       const { store, ProductType, Platform } = CdvPurchase;
 
       store.verbosity = CdvPurchase.LogLevel.WARNING;

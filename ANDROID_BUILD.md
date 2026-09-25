@@ -313,3 +313,43 @@ VITE_ADMOB_REWARDED_ANDROID=
   وWeb NFC داخل المتصفح.
 - كل عملية قراءة/كتابة تُسجّل حالة انشغال (`src/lib/nfc/busy.ts`) تُخفي الإعلانات تلقائياً أثناء العملية.
 - زر الرجوع في Android يُدار من `src/components/native/NativeBridge.tsx` ولا يُغلق التطبيق أثناء عملية NFC جارية.
+
+---
+
+## Google Play Billing (اشتراكات البريميوم)
+
+الدفع داخل تطبيق Android يتم **حصراً** عبر Google Play Billing (شرط سياسات Google Play)،
+عبر الإضافة `cordova-plugin-purchase` وطبقة `src/lib/billing/`.
+
+### 1) إعداد المنتج في Google Play Console
+Monetize → Products → **Subscriptions** → Create subscription:
+- Product ID: `nfcpro_premium`
+- Base plan 1: `premium-monthly` — دوري شهري — 2 USD
+- Base plan 2: `premium-yearly` — دوري سنوي — 10 USD
+
+يجب أن تكون المعرفات مطابقة لما في `src/lib/billing/products.ts`.
+
+### 2) التحقق من الشراء على الخادم
+- أنشئ Service Account في Google Cloud لمشروع التطبيق، وامنحه في Play Console
+  (Users and permissions) صلاحيات **View financial data** و **Manage orders and subscriptions**.
+- احفظ ملف JSON كسر في المشروع باسم `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
+- التفعيل يتم فقط بعد تأكيد Google عبر `subscriptionsv2`، ثم يُقَر الشراء (acknowledge).
+
+### 3) إشعارات التجديد/الإلغاء (RTDN)
+- Play Console → Monetization setup → Real-time developer notifications → Pub/Sub topic.
+- اشتراك Push إلى:
+  `https://<your-domain>/api/public/play-rtdn?token=<PLAY_RTDN_SECRET>`
+- السر `PLAY_RTDN_SECRET` محفوظ في أسرار المشروع.
+
+### 4) الاختبار قبل النشر
+1. ارفع Release AAB إلى **Internal testing** (Billing لا يعمل على APK غير موقّع/غير منشور).
+2. أضف بريدك في **License testing** للحصول على مشتريات تجريبية بدون خصم.
+3. من التطبيق: صفحة **بريميوم** → اشترك → يجب أن تظهر نافذة Google Play،
+   وبعد الشراء تختفي الإعلانات وتُفتح الخصائص.
+4. اختبر **استعادة المشتريات** بعد إعادة تثبيت التطبيق.
+
+الأوامر:
+```bash
+bun run build:mobile
+cd android && ./gradlew bundleRelease
+```
