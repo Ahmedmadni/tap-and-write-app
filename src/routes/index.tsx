@@ -43,6 +43,13 @@ function Home() {
           </div>
           <div className="flex gap-2">
             <Link
+              to="/analyze"
+              aria-label="تحليل ذكي"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/70"
+            >
+              <Sparkles className="h-4 w-4" />
+            </Link>
+            <Link
               to="/history"
               aria-label="السجل"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/70"
