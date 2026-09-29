@@ -29,7 +29,7 @@ function LockPage() {
     setError(null);
     setDone(false);
     const sup = checkNfcSupport();
-    if (sup.status !== "ok" && sup.status !== "native") {
+    if (sup.status !== "ok") {
       setError(sup.status === "ssr" ? "" : (sup as { message: string }).message);
       return;
     }
