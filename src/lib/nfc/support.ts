@@ -18,32 +18,25 @@ export function checkNfcSupport(): NfcSupport {
   if (typeof window === "undefined") return { status: "ssr" };
 
   if (isCapacitorNative()) {
-    return {
-      status: "native",
-      message: "وضع التطبيق الأصلي — NFC عبر Capacitor.",
-    };
+    return { status: "ok" };
   }
 
+  // لا تظهر أي إرشادات خاصة بإطار المعاينة أو المتصفح — تجاهل بصمت.
   if (window.self !== window.top) {
-    return {
-      status: "iframe",
-      message:
-        "أنت تشاهد التطبيق داخل إطار المعاينة. NFC لا يعمل هنا — افتح الرابط مباشرة على متصفح هاتفك (Chrome على Android).",
-    };
+    return { status: "ssr" };
   }
 
   if (!window.isSecureContext) {
     return {
       status: "insecure",
-      message: "NFC يتطلب اتصال آمن (HTTPS).",
+      message: "يتطلب NFC اتصالاً آمناً. أعد المحاولة لاحقاً.",
     };
   }
 
   if (!("NDEFReader" in window)) {
     return {
       status: "unsupported",
-      message:
-        "متصفحك لا يدعم Web NFC. استخدم Chrome أو Edge على هاتف Android، وتأكد أن خاصية NFC مفعّلة في إعدادات الجهاز.",
+      message: "خاصية NFC غير متوفرة على هذا الجهاز. تأكد من تفعيل NFC في إعدادات الجهاز.",
     };
   }
 
