@@ -2,9 +2,7 @@
 
 export type NfcSupport =
   | { status: "ok" }
-  | { status: "native"; message: string }
   | { status: "ssr" }
-  | { status: "iframe"; message: string }
   | { status: "insecure"; message: string }
   | { status: "unsupported"; message: string };
 
@@ -47,7 +45,7 @@ export function friendlyError(err: unknown): string {
   if (!(err instanceof Error)) return "حدث خطأ غير متوقع.";
   const name = err.name;
   if (name === "NotAllowedError")
-    return "تم رفض الإذن. الرجاء السماح للموقع باستخدام NFC.";
+    return "تم رفض الإذن. الرجاء السماح للتطبيق باستخدام NFC.";
   if (name === "NotSupportedError")
     return "هذه البطاقة أو هذه العملية غير مدعومة على جهازك.";
   if (name === "NotReadableError")
