@@ -17,6 +17,7 @@ import { Route as LockRouteImport } from './routes/lock'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EraseRouteImport } from './routes/erase'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AnalyzeRouteImport } from './routes/analyze'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -62,6 +63,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyzeRoute = AnalyzeRouteImport.update({
+  id: '/analyze',
+  path: '/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/analyze': typeof AnalyzeRoute
   '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/analyze': typeof AnalyzeRoute
   '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/analyze': typeof AnalyzeRoute
   '/auth': typeof AuthRoute
   '/erase': typeof EraseRoute
   '/history': typeof HistoryRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/analyze'
     | '/auth'
     | '/erase'
     | '/history'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/analyze'
     | '/auth'
     | '/erase'
     | '/history'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/analyze'
     | '/auth'
     | '/erase'
     | '/history'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
+  AnalyzeRoute: typeof AnalyzeRoute
   AuthRoute: typeof AuthRoute
   EraseRoute: typeof EraseRoute
   HistoryRoute: typeof HistoryRoute
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analyze': {
+      id: '/analyze'
+      path: '/analyze'
+      fullPath: '/analyze'
+      preLoaderRoute: typeof AnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -279,6 +299,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
+  AnalyzeRoute: AnalyzeRoute,
   AuthRoute: AuthRoute,
   EraseRoute: EraseRoute,
   HistoryRoute: HistoryRoute,

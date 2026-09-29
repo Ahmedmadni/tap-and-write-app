@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings } from "lucide-react";
+import { Nfc, ScanLine, Edit3, Eraser, Lock, History, Settings , Sparkles } from "lucide-react";
 
 import { HomeStats } from "@/components/nfc/HomeStats";
 import { NfcHero3D } from "@/components/nfc/NfcHero3D";
