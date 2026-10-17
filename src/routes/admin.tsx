@@ -10,6 +10,8 @@ export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "لوحة التحكم — NFC PRO" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "متابعة المشتركين وإدارة اشتراكات بريميوم في NFC PRO." },
       { property: "og:title", content: "لوحة التحكم — NFC PRO" },
       { property: "og:description", content: "متابعة المشتركين وإدارة اشتراكات بريميوم." },

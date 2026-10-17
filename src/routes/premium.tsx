@@ -19,6 +19,8 @@ export const Route = createFileRoute("/premium")({
   head: () => ({
     meta: [
       { title: "بريميوم — NFC PRO بلا إعلانات" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         name: "description",
         content: "اشترك في بريميوم NFC PRO بـ 2 دولار شهرياً أو 10 دولار سنوياً: بلا إعلانات وكل الخصائص المتقدمة.",

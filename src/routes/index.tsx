@@ -9,7 +9,11 @@ import { AppFooter } from "@/components/nfc/AppFooter";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NFC Tools — قارئ وكاتب بطاقات NFC" },
+      { title: "NFC PRO — قارئ وكاتب بطاقات NFC" },
+      { property: "og:title", content: "NFC PRO — قارئ وكاتب بطاقات NFC" },
+      { property: "og:description", content: "قراءة وكتابة وتهيئة وقفل بطاقات NFC وحفظ سجل العمليات محلياً." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         name: "description",
         content:

@@ -8,6 +8,8 @@ export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "حسابي — NFC PRO" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "حالة الاشتراك وإدارة الحساب في NFC PRO." },
       { property: "og:title", content: "حسابي — NFC PRO" },
       { property: "og:description", content: "حالة الاشتراك وإدارة الحساب في NFC PRO." },

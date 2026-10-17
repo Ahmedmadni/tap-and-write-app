@@ -11,7 +11,11 @@ import { addHistory } from "@/lib/storage/history";
 export const Route = createFileRoute("/lock")({
   head: () => ({
     meta: [
-      { title: "قفل بطاقة NFC" },
+      { title: "قفل بطاقة NFC — NFC PRO" },
+      { property: "og:title", content: "قفل بطاقة NFC — NFC PRO" },
+      { property: "og:description", content: "اجعل البطاقة للقراءة فقط بشكل نهائي." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "اجعل البطاقة للقراءة فقط بشكل نهائي." },
     ],
   }),

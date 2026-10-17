@@ -11,7 +11,7 @@
 > **بعد أي تعديل:**
 > ```bash
 > bun install
-> bun run build:mobile      # vite build + cap sync android
+> bun run build:mobile      # بناء جميع الصفحات + فحصها + نسخها إلى Android والتحقق من النسخة
 > bunx cap open android
 > ```
 > بناء Debug: `cd android && ./gradlew assembleDebug`
@@ -217,16 +217,24 @@ bun run build:mobile     # يبني SPA static + cap sync android
 ```
 ثم في Android Studio: **Build → Generate Signed Bundle / APK** مرة أخرى (نفس الـ keystore).
 
-> ✅ **الوضع الحالي (Offline كامل + Service Worker)**:
+> ✅ **الوضع الحالي (جميع الصفحات داخل APK من أول تشغيل)**:
 > - `capacitor.config.ts` بدون `server.url` و `webDir: "dist/client"`.
-> - `vite.config.ts` يعمل prerender لكل المسارات إلى ملفات HTML ثابتة.
-> - `public/sw.js` هو Service Worker مُخصّص يخزّن الـ App Shell عند أول تشغيل،
->   ويقدّم HTML عبر NetworkFirst، والأصول عبر CacheFirst.
-> - داخل Capacitor WebView على Android، السكيمة تكون `https://localhost` — وهي
->   من الأصول الآمنة (Secure Origin) لذلك تسجيل الـ Service Worker يعمل بشكل طبيعي،
->   ما يعني أن التطبيق يعمل **بدون إنترنت** حتى بعد إعادة تشغيل الجهاز.
-> - التسجيل يتم من `src/lib/pwa/register.ts` مع حماية لمنع تفعيله داخل معاينة Lovable.
+> - `scripts/mobile-pages.ts` يحدد جميع الصفحات الاثنتي عشرة: الرئيسية، القراءة، الكتابة، المسح، القفل، السجل، الإعدادات، الاشتراك، الحساب، تسجيل الدخول، الإدارة، والتحليل الذكي.
+> - `vite.config.ts` يستخدم `pages` لإنشاء ملف HTML محلي مستقل لكل صفحة داخل `dist/client`، مع جميع ملفات JavaScript وCSS المجمعة.
+> - `build:mobile` يرفض متابعة التجميع إذا كانت أي صفحة أو ملفاتها ناقصة، ثم يتحقق من تطابق جميع الملفات المنسوخة داخل `android/app/src/main/assets/public`.
+> - فتح الصفحات والقراءة والكتابة والسجل المحلي لا يعتمد على الإنترنت أو زيارة مسبقة أو تخزين Service Worker. صلاحية NFC وتوافر البطاقة والجهاز الداعم تبقى مطلوبة.
+> - صفحة الاشتراك محفوظة محليًا؛ تنفيذ الشراء واستعادته والتحقق من الاشتراك، تسجيل الدخول، بيانات الإدارة السحابية والتحليل الذكي تتطلب الإنترنت.
 > - أي تعديل يتطلب `bun run build:mobile` + إعادة بناء APK.
+
+### التحقق قبل إخراج APK
+
+```bash
+bun run test:mobile
+bun run build:mobile
+bunx cap open android
+```
+
+في Android Studio أعد بناء APK وثبته، ثم فعّل وضع الطيران قبل أول فتح. افتح القراءة والكتابة والسجل والاشتراك، وأغلق التطبيق وأعد فتحه. جرّب قراءة وكتابة بطاقة حقيقية مع NFC مفعّل؛ خدمات الشراء والتحليل تحتاج اتصالًا ولا يمكن اختبارها في وضع الطيران.
 
 
 ---
