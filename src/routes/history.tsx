@@ -32,7 +32,11 @@ import {
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "سجل العمليات" },
+      { title: "سجل العمليات — NFC PRO" },
+      { property: "og:title", content: "سجل العمليات — NFC PRO" },
+      { property: "og:description", content: "سجل عمليات NFC المحفوظة محلياً." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "سجل عمليات NFC المحفوظة محلياً." },
     ],
   }),

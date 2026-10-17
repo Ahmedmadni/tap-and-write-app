@@ -14,7 +14,11 @@ import { addHistory } from "@/lib/storage/history";
 export const Route = createFileRoute("/write")({
   head: () => ({
     meta: [
-      { title: "كتابة بطاقة NFC" },
+      { title: "كتابة بطاقة NFC — NFC PRO" },
+      { property: "og:title", content: "كتابة بطاقة NFC — NFC PRO" },
+      { property: "og:description", content: "اكتب نصاً أو رابطاً أو WiFi أو vCard أو أي محتوى NDEF." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "اكتب نصاً أو رابطاً أو WiFi أو vCard أو أي محتوى NDEF." },
     ],
   }),

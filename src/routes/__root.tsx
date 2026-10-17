@@ -90,8 +90,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#0a0f1e" },
       { name: "twitter:title", content: "NFC PRO — قراءة وكتابة بطاقات NFC" },
       { name: "twitter:description", content: "NFC Buddy reads and rewrites data on NFC-enabled cards and devices." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1b3db35-7189-4e73-a2eb-7fcacbb1ebae/id-preview-7622adfe--ba8baf9b-fb32-4bfe-9541-6ea03fa50ab3.lovable.app-1781001067395.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1b3db35-7189-4e73-a2eb-7fcacbb1ebae/id-preview-7622adfe--ba8baf9b-fb32-4bfe-9541-6ea03fa50ab3.lovable.app-1781001067395.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

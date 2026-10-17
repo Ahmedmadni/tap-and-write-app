@@ -13,7 +13,11 @@ import { addHistory } from "@/lib/storage/history";
 export const Route = createFileRoute("/read")({
   head: () => ({
     meta: [
-      { title: "قراءة بطاقة NFC" },
+      { title: "قراءة بطاقة NFC — NFC PRO" },
+      { property: "og:title", content: "قراءة بطاقة NFC — NFC PRO" },
+      { property: "og:description", content: "اقرأ محتوى أي بطاقة NFC تدعم NDEF." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "اقرأ محتوى أي بطاقة NFC تدعم NDEF." },
     ],
   }),

@@ -4,7 +4,14 @@ import { AppShell } from "@/components/nfc/AppShell";
 import { clearHistory } from "@/lib/storage/history";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "الإعدادات" }, { name: "description", content: "إعدادات التطبيق." }] }),
+  head: () => ({ meta: [
+    { title: "الإعدادات — NFC PRO" },
+    { name: "description", content: "إعدادات NFC PRO وإدارة البيانات المحلية." },
+    { property: "og:title", content: "الإعدادات — NFC PRO" },
+    { property: "og:description", content: "إعدادات NFC PRO وإدارة البيانات المحلية." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: SettingsPage,
 });
 

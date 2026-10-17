@@ -10,6 +10,8 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "تسجيل الدخول — NFC PRO" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "سجّل الدخول لإدارة اشتراك البريميوم في NFC PRO." },
       { property: "og:title", content: "تسجيل الدخول — NFC PRO" },
       { property: "og:description", content: "سجّل الدخول لإدارة اشتراك البريميوم في NFC PRO." },

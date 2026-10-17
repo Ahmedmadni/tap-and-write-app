@@ -11,7 +11,11 @@ import { addHistory } from "@/lib/storage/history";
 export const Route = createFileRoute("/erase")({
   head: () => ({
     meta: [
-      { title: "تهيئة بطاقة NFC" },
+      { title: "تهيئة بطاقة NFC — NFC PRO" },
+      { property: "og:title", content: "تهيئة بطاقة NFC — NFC PRO" },
+      { property: "og:description", content: "امسح محتوى بطاقة NFC بكتابة سجل فارغ." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "description", content: "امسح محتوى بطاقة NFC بكتابة سجل فارغ." },
     ],
   }),
