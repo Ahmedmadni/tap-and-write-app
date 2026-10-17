@@ -5,6 +5,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Plugin } from "vite";
+import { mobilePagePaths } from "./scripts/mobile-pages";
 
 /**
  * Nitro (cloudflare-module preset) writes the server bundle to
@@ -76,24 +77,12 @@ export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (SSR error wrapper).
     server: { entry: "server" },
-    // Prerender الصفحات الثابتة إلى HTML داخل dist/client — يسمح للـ APK / Capacitor
-    // بتقديم App Shell جاهز من أول فتح مع بقاء Service Worker مسؤولاً عن الأصول.
+    // Bundle every visitor-independent page shell for first-launch offline use.
+    pages: mobilePagePaths.map((path) => ({ path })),
     prerender: {
       enabled: true,
-      crawlLinks: true,
-      routes: [
-        "/",
-        "/read",
-        "/write",
-        "/erase",
-        "/lock",
-        "/history",
-        "/settings",
-        "/test",
-        "/cache-status",
-        "/nfc-debug",
-
-      ],
+      autoStaticPathsDiscovery: false,
+      crawlLinks: false,
     },
 
   },
