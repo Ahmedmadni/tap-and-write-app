@@ -1,2 +1,3 @@
-- [ ] Pin compatible seroval dependencies and verify preview serialization.
-- [ ] Run Android local-page tests and validate available packaged output.
+- [x] Pin compatible seroval dependencies and verify preview serialization.
+- [x] Run Android local-page tests.
+- [ ] Verify the real Android package output on the user's machine with `bun run build:mobile`.
