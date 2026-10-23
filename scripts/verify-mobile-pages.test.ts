@@ -19,7 +19,7 @@ function fixture() {
 }
 afterEach(() => temporaryDirectories.splice(0).forEach((directory) => rmSync(directory, { recursive: true, force: true })));
 
-for (const path of ["/read", "/write", "/history", "/premium"]) {
+for (const path of mobilePagePaths) {
   test(`requires ${path} to be stored locally before Android packaging`, () => {
     const root = fixture();
     expect(verifyMobilePages(root)).toEqual([]);
@@ -30,7 +30,9 @@ for (const path of ["/read", "/write", "/history", "/premium"]) {
 test("requires JavaScript dependencies to be available without internet", () => {
   const root = fixture();
   rmSync(join(root, "assets/app.js"));
-  expect(verifyMobilePages(root)).toHaveLength(mobilePagePaths.length);
+  expect(verifyMobilePages(root)).toEqual(
+    mobilePagePaths.map((path) => `Missing page dependency on ${path}: /assets/app.js`),
+  );
 });
 test("detects outdated or missing files after Android sync", () => {
   const source = fixture();
